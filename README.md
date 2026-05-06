@@ -1,2 +1,89 @@
-# cs340-database-project-team16
-Project repository for OSU CS340 Intro to Databases - Web-based CRUD Database Project.
+# CS340 Database Project - Team 16
+
+Project repository for OSU CS340 Intro to Databases (Spring 2026).
+
+## Team
+- Shani Plunkett-de la Cruz
+- Lon Danna
+
+## Project
+Janeway's OBGYN Association database and web UI.
+
+This project implements a database-backed administrative web interface for managing:
+- Patients
+- AppointmentTypes
+- Providers
+- Clinics
+- Appointments
+- ProviderLocations (M:N intersection table)
+
+## Repository Goals
+- Track project step deliverables for CS340
+- Maintain DDL and DML SQL scripts
+- Build and deploy Node + Handlebars UI pages for CRUD workflows
+- Collaborate via feature branch workflow
+
+## Current Status (Step 3 Draft)
+- Step 3 DML created
+- Node + Handlebars app scaffold created
+- Entity routes and browseable template pages created
+- GitHub project issues created for Step 2 and Step 3 tracking
+
+## Key Project Files
+- `projectgroup16_step3_DRAFT/` - Step 3 web app scaffold
+	- `app.js` - Express routes and server startup
+	- `views/` - Handlebars template pages
+	- `public/style.css` - basic styling
+	- `package.json` - scripts and dependencies
+- `projectgroup16_step3_DRAFT/group16_DDL.sql` - DDL + sample data
+- `projectgroup16_step3_DRAFT/group16_DML.sql` - DML queries for UI workflows
+
+## Local Development
+From the Step 3 app folder:
+
+```bash
+cd projectgroup16_step3_DRAFT
+npm install
+npm start
+```
+
+App URL:
+- `http://localhost:9124`
+
+Note:
+- `npm run development` may fail on very new Node versions (e.g. Node 25) due to watcher compatibility.
+- Use `npm start` for local testing, or switch to Node LTS (recommended).
+
+## ENGR Server Deployment (for grading)
+The app must be running on classwork.engr.oregonstate.edu.
+
+Typical deployment:
+
+```bash
+git clone https://github.com/Lon20wn/cs340-database-project-team16.git
+cd cs340-database-project-team16
+git checkout feature-lon
+cd projectgroup16_step3_DRAFT
+npm install
+npm run production
+```
+
+Expected URL format:
+- `http://classwork.engr.oregonstate.edu:9124`
+
+## Branch Workflow
+- `main` = stable branch
+- `feature-lon` = Lon development branch
+- `feature-shani` = Shani development branch
+
+Merge to `main` only after team review/verification.
+
+## Course Submission Notes
+For each project step, ensure:
+- required ZIP naming format
+- required PDF sections are updated
+- SQL files match report/schema
+- Ed post and Canvas URL submission are both completed
+
+## AI Use Statement
+Responsible AI assistance may be used per course policy. Any AI usage should be documented in submissions with prompt/citation summary when required.
