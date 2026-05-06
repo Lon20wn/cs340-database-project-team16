@@ -48,7 +48,7 @@ npm start
 ```
 
 Local URL:
-- http://localhost:1267
+- http://localhost:9116
 
 ## Run on ENGR server
 For grading/review, the app should run on classwork.engr.oregonstate.edu.
@@ -68,7 +68,7 @@ npm run production
 ```
 
 Expected URL:
-- http://classwork.engr.oregonstate.edu:1267
+- http://classwork.engr.oregonstate.edu:9116
 
 ## Branch Workflow
 - `main` = stable branch
