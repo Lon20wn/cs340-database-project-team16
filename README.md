@@ -47,12 +47,11 @@ npm install
 npm start
 ```
 
-App URL:
-- `http://localhost:9124`
+Local URL:
+- http://localhost:9124
 
-Note:
-- `npm run development` may fail on very new Node versions (e.g. Node 25) due to watcher compatibility.
-- Use `npm start` for local testing, or switch to Node LTS (recommended).
+## Run on ENGR server
+For grading/review, the app should run on classwork.engr.oregonstate.edu.
 
 ## ENGR Server Deployment (for grading)
 The app must be running on classwork.engr.oregonstate.edu.
@@ -68,8 +67,8 @@ npm install
 npm run production
 ```
 
-Expected URL format:
-- `http://classwork.engr.oregonstate.edu:9124`
+Expected URL:
+- http://classwork.engr.oregonstate.edu:9124
 
 ## Branch Workflow
 - `main` = stable branch
@@ -78,12 +77,10 @@ Expected URL format:
 
 Merge to `main` only after team review/verification.
 
-## Course Submission Notes
-For each project step, ensure:
-- required ZIP naming format
-- required PDF sections are updated
-- SQL files match report/schema
-- Ed post and Canvas URL submission are both completed
+## Submission reminders
+- Make sure required files are included.
+- Make sure naming rules are followed.
+- Post required links to Ed and Canvas.
 
-## AI Use Statement
-Responsible AI assistance may be used per course policy. Any AI usage should be documented in submissions with prompt/citation summary when required.
+## AI use
+If AI tools are used, include the required course citation/summary in the final submission.
