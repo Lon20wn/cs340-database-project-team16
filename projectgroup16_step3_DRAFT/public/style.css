@@ -1,16 +1,77 @@
+/*
+Citation for this file:
+Date: 05/06/2026
+Adapted from CS340 Node.js starter/exploration materials.
+Source: CS340 Web Application Technology Exploration and Node Part 2 walkthrough.
+Source URL: https://canvas.oregonstate.edu/
+
+File purpose:
+Provides shared styling for the Step 3 draft UI pages, including layout,
+navigation, cards, forms, and action-button styling.
+*/
+
+/* Theme variables control the light/dark mode colors used across the app. */
+:root {
+    --bg: #f7f8fb;
+    --text: #1f2937;
+    --nav-bg: #1f3b73;
+    --card-bg: #ffffff;
+    --card-border: #dbe2ea;
+    --muted: #6b7280;
+    --field-border: #cbd5e1;
+    --submit-bg: #1f3b73;
+    --toggle-bg: #ffffff;
+    --toggle-text: #1f2937;
+}
+
+/* Dark mode overrides are enabled when body[data-theme="dark"] is set. */
+body[data-theme="dark"] {
+    --bg: #111827;
+    --text: #f3f4f6;
+    --nav-bg: #0f172a;
+    --card-bg: #1f2937;
+    --card-border: #374151;
+    --muted: #cbd5e1;
+    --field-border: #4b5563;
+    --submit-bg: #2563eb;
+    --toggle-bg: #1f2937;
+    --toggle-text: #f3f4f6;
+}
+
+/* Base page colors and typography come from the active theme variables above. */
 body { 
     font-family: Arial, sans-serif; 
     margin: 0; 
-    background: #f7f8fb; color: #1f2937; 
+    background: var(--bg);
+    color: var(--text); 
 }
 nav { 
-    background: #1f3b73; 
+    background: var(--nav-bg); 
     padding: 14px; 
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+/* Navigation links are grouped separately so the theme button can sit on the right. */
+.nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
 }
 nav a { color: #fff; 
     margin-right: 14px; 
     text-decoration: none; 
     font-size: 14px; 
+}
+/* Theme toggle uses neutral colors so it remains readable in either theme. */
+.theme-toggle {
+    background: var(--toggle-bg);
+    color: var(--toggle-text);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 14px;
 }
 main { 
     padding: 24px; 
@@ -19,15 +80,72 @@ h1 {
     margin-top: 0; 
 }
 .card { 
-    background: #fff; 
-    border: 1px solid #dbe2ea; 
+    background: var(--card-bg); 
+    border: 1px solid var(--card-border); 
     border-radius: 8px; 
     padding: 16px; 
     margin-bottom: 16px; 
 }
-.small-note { color: #6b7280; 
+.small-note { color: var(--muted); 
     font-size: 13px; 
 }
 ul { 
     margin-top: 8px; 
+}
+
+/* Stack form fields vertically for readability on draft CRUD pages. */
+.card form {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-width: 260px;
+}
+
+/* Labels are bolded to make each input purpose easy to scan quickly. */
+.card form label {
+    margin-top: 8px;
+    font-weight: 600;
+}
+
+/* Inputs/selects inherit active theme colors so dark mode stays readable. */
+.card form input,
+.card form select {
+    padding: 8px;
+    border: 1px solid var(--field-border);
+    border-radius: 4px;
+    font-size: 14px;
+    background: var(--card-bg);
+    color: var(--text);
+}
+
+/* Submit buttons keep the primary app color for a consistent call to action. */
+.card form input[type="submit"] {
+    margin-top: 12px;
+    width: fit-content;
+    background: var(--submit-bg);
+    color: #fff;
+    cursor: pointer;
+}
+
+/* Shared action-button base style used on browse tables. */
+.btn-edit,
+.btn-delete {
+    display: inline-block;
+    color: #fff;
+    text-decoration: none;
+    border: 0;
+    border-radius: 4px;
+    padding: 6px 10px;
+    font-size: 12px;
+    margin-right: 6px;
+}
+
+/* Primary action style for Edit links/buttons. */
+.btn-edit {
+    background: #2563eb;
+}
+
+/* Danger action style for Delete links/buttons. */
+.btn-delete {
+    background: #dc2626;
 }
