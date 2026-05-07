@@ -15,18 +15,53 @@ Source URL: https://canvas.oregonstate.edu/
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
+  {{!--
+    Shared layout note:
+    All page-specific content is injected into {{{body}}}, so nav/theme behavior
+    only needs to be maintained in one file.
+  --}}
   <nav>
-    <a href="/">Home</a>
-    <a href="/patients">Patients</a>
-    <a href="/appointment-types">AppointmentTypes</a>
-    <a href="/providers">Providers</a>
-    <a href="/clinics">Clinics</a>
-    <a href="/appointments">Appointments</a>
-    <a href="/provider-locations">ProviderLocations</a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/patients">Patients</a>
+      <a href="/appointment-types">AppointmentTypes</a>
+      <a href="/providers">Providers</a>
+      <a href="/clinics">Clinics</a>
+      <a href="/appointments">Appointments</a>
+      <a href="/provider-locations">ProviderLocations</a>
+    </div>
+    {{!--
+      UI enhancement note:
+      Theme toggle switches between light and dark mode for readability.
+      Preference is stored locally in the browser using localStorage.
+    --}}
+    <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark mode">🌙</button>
   </nav>
 
   <main>
     {{{body}}}
   </main>
+
+  <script>
+    // Theme preference is preserved between page loads using localStorage.
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.body.dataset.theme = savedTheme;
+
+    const toggleButton = document.getElementById('theme-toggle');
+    // In light mode the button shows the moon; in dark mode it shows the sun.
+    const updateToggleIcon = () => {
+      toggleButton.textContent = document.body.dataset.theme === 'dark' ? '☀️' : '🌙';
+    };
+
+    updateToggleIcon();
+
+    toggleButton.addEventListener('click', () => {
+      // Toggle the page theme by switching the body data attribute.
+      const nextTheme = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
+      document.body.dataset.theme = nextTheme;
+      localStorage.setItem('theme', nextTheme);
+      updateToggleIcon();
+    });
+  </script>
 </body>
 </html>
