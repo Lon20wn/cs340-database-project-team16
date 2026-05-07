@@ -10,15 +10,20 @@ const { engine } = require('express-handlebars');
 const app = express();
 const PORT = process.env.PORT || 9116;
 
+// db-connector is imported now so later steps can wire real SQL behavior.
+// For Step 3 Draft, most routes still only render browsable UI pages.
 const db = require('./database/db-connector');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
+// Shared Handlebars setup for all entity pages.
 app.engine('.hbs', engine({ extname: '.hbs' }));
 app.set('view engine', '.hbs');
 
+// Step 3 Draft routes:
+// These routes are intentionally lightweight and primarily serve browsable UI pages.
 app.get('/', (req, res) => {
   res.render('home');
 });
@@ -45,6 +50,14 @@ app.get('/appointments', (req, res) => {
 
 app.get('/provider-locations', (req, res) => {
   res.render('provider-locations');
+});
+
+// Step 3 draft placeholder endpoint:
+// Used by UI buttons to show that edit/delete backend logic is intentionally
+// deferred to a later project step.
+app.get('/not-implemented', (req, res) => {
+  const feature = req.query.feature || 'This action';
+  res.status(501).send(`${feature} is not implemented yet in Step 3 Draft.`);
 });
 
 app.listen(PORT, () => {
