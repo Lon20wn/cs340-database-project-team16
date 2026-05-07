@@ -82,5 +82,8 @@ Merge to `main` only after team review/verification.
 - Make sure naming rules are followed.
 - Post required links to Ed and Canvas.
 
+## Code citation note
+Parts of the Node/Handlebars structure and UI form layout were adapted from the CS340 starter code and Web Application Technology Exploration materials. Project-specific schema fields, page content, and entity setup were adapted for Janeway's OBGYN Association.
+
 ## AI use
 If AI tools are used, include the required course citation/summary in the final submission.

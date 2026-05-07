@@ -1,3 +1,9 @@
+// Citation for this file:
+// Date: 05/06/2026
+// Adapted from CS340 Node.js starter/exploration materials.
+// Source: CS340 Web Application Technology Exploration and Node Part 2 walkthrough.
+// Source URL: https://canvas.oregonstate.edu/
+
 const express = require('express');
 const { engine } = require('express-handlebars');
 
