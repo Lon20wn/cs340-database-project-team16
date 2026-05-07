@@ -7,7 +7,209 @@ Source URL: https://canvas.oregonstate.edu/
 --}}
 
 <h1>Appointments</h1>
+
+{{!--
+  Implementation summary:
+  This page was expanded beyond the minimal placeholder so reviewers can clearly
+  see planned CRUD coverage for the Appointments entity.
+--}}
+
+<!-- READ -->
 <div class="card">
-  <p>Browse appointment records and manage scheduling data.</p>
-  <p class="small-note">Form sections are added in the next step.</p>
+  <h2>Browse Appointments</h2>
+  <p>Displays all appointment records in the system.</p>
+  {{!--
+    Step 3 note:
+    This table shows static sample rows for the draft UI.
+    Column names align with Appointments table attributes in DDL/DML.
+  --}}
+  <p class="small-note">Edit/Delete buttons are placeholders for later project steps.</p>
+  <table>
+    <thead>
+      {{!--
+        Using schema-aligned column names here helps reviewers map the UI to the
+        submitted DDL/DML files more easily.
+      --}}
+      <tr>
+        <th>appointmentID</th>
+        <th>apptDateTime</th>
+        <th>apptStatus</th>
+        <th>typeID</th>
+        <th>patientID</th>
+        <th>providerID</th>
+        <th>clinicID</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{!-- Static sample rows for Step 3 Draft. --}}
+      <tr>
+        <td>1</td>
+        <td>2026-07-15 14:30</td>
+        <td>Scheduled</td>
+        <td>NP</td>
+        <td>2</td>
+        <td>113</td>
+        <td>1</td>
+        <td>
+          {{!-- Placeholder actions route to a simple not-implemented message. --}}
+          <a class="btn-edit" href="/not-implemented?feature=appointments-edit">Edit</a>
+          <a class="btn-delete" href="/not-implemented?feature=appointments-delete">Delete</a>
+        </td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>2026-03-31 13:00</td>
+        <td>Completed</td>
+        <td>OVR</td>
+        <td>4</td>
+        <td>102</td>
+        <td>2</td>
+        <td>
+          <a class="btn-edit" href="/not-implemented?feature=appointments-edit">Edit</a>
+          <a class="btn-delete" href="/not-implemented?feature=appointments-delete">Delete</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- CREATE -->
+<div class="card">
+  <h2>Schedule a New Appointment</h2>
+  {{!--
+    Step 3 note:
+    Form field names are aligned to DML variable intent (apptDateTime,
+    apptStatus, typeID, patientID, providerID, clinicID).
+  --}}
+  <form action="/appointments/add" method="POST">
+    {{!-- Date and time are collected together to reflect apptDateTime in SQL. --}}
+    <label for="create_apptDateTime">Appointment Date/Time:</label>
+    <input type="datetime-local" id="create_apptDateTime" name="apptDateTime" required />
+
+    <label for="create_apptStatus">Appointment Status:</label>
+    <select id="create_apptStatus" name="apptStatus" required>
+      <option value="" disabled selected>Select status</option>
+      <option value="Scheduled">Scheduled</option>
+      <option value="Completed">Completed</option>
+      <option value="Cancelled">Cancelled</option>
+    </select>
+
+    <label for="create_typeID">Appointment Type:</label>
+    <select id="create_typeID" name="typeID" required>
+      <option value="" disabled selected>Select an appointment type</option>
+      <option value="NP">NP - New Patient</option>
+      <option value="OVR">OVR - Office Visit Regular</option>
+      <option value="PROC">PROC - Procedure</option>
+      <option value="NOB">NOB - New OB</option>
+      <option value="OBR">OBR - OB Regular</option>
+    </select>
+
+    <label for="create_patientID">Patient:</label>
+    <select id="create_patientID" name="patientID" required>
+      <option value="" disabled selected>Select a patient</option>
+      <option value="1">1 - Nyota Uhura</option>
+      <option value="2">2 - Jadzia Dax</option>
+      <option value="3">3 - B'Elanna Torres</option>
+    </select>
+
+    <label for="create_providerID">Provider:</label>
+    <select id="create_providerID" name="providerID" required>
+      <option value="" disabled selected>Select a provider</option>
+      <option value="113">113 - Beverly Crusher</option>
+      <option value="249">249 - Christine Chapel</option>
+      <option value="368">368 - Julienne Bashir</option>
+      <option value="102">102 - Katherine Pulaski</option>
+    </select>
+
+    <label for="create_clinicID">Clinic:</label>
+    <select id="create_clinicID" name="clinicID" required>
+      <option value="" disabled selected>Select a clinic</option>
+      <option value="1">1 - Corvallis</option>
+      <option value="2">2 - Salem</option>
+      <option value="3">3 - Eugene</option>
+    </select>
+
+    <input type="submit" value="Create Appointment" />
+  </form>
+</div>
+
+<!-- UPDATE -->
+<div class="card">
+  <h2>Update an Appointment</h2>
+  {{!--
+    Step 3 note:
+    Update form is UI-only in this draft. Backend update logic is implemented
+    in later steps.
+  --}}
+  <form action="/appointments/update" method="POST">
+    {{!-- Update options mirror the DML update query inputs for this entity. --}}
+    <label for="update_appointmentID">Appointment to Update:</label>
+    <select id="update_appointmentID" name="appointmentID" required>
+      <option value="" disabled selected>Select an appointment</option>
+      <option value="1">1 - Nyota Uhura (2026-05-15 09:00)</option>
+      <option value="2">2 - Jadzia Dax (2026-05-16 11:30)</option>
+    </select>
+
+    <label for="update_apptDateTime">Appointment Date/Time:</label>
+    <input type="datetime-local" id="update_apptDateTime" name="apptDateTime" />
+
+    <label for="update_apptStatus">Appointment Status:</label>
+    <select id="update_apptStatus" name="apptStatus">
+      <option value="" disabled selected>Select status</option>
+      <option value="Scheduled">Scheduled</option>
+      <option value="Completed">Completed</option>
+      <option value="Cancelled">Cancelled</option>
+    </select>
+
+    <label for="update_typeID">Appointment Type:</label>
+    <select id="update_typeID" name="typeID">
+      <option value="" disabled selected>Select an appointment type</option>
+      <option value="NP">NP - New Patient</option>
+      <option value="OVR">OVR - Office Visit Regular</option>
+      <option value="PROC">PROC - Procedure</option>
+      <option value="NOB">NOB - New OB</option>
+      <option value="OBR">OBR - OB Regular</option>
+    </select>
+
+    <label for="update_providerID">Provider:</label>
+    <select id="update_providerID" name="providerID">
+      <option value="" disabled selected>Select a provider</option>
+      <option value="113">113 - Beverly Crusher</option>
+      <option value="249">249 - Christine Chapel</option>
+      <option value="368">368 - Julienne Bashir</option>
+      <option value="102">102 - Katherine Pulaski</option>
+    </select>
+
+    <label for="update_clinicID">Clinic:</label>
+    <select id="update_clinicID" name="clinicID">
+      <option value="" disabled selected>Select a clinic</option>
+      <option value="1">1 - Corvallis</option>
+      <option value="2">2 - Salem</option>
+      <option value="3">3 - Eugene</option>
+    </select>
+
+    <input type="submit" value="Update Appointment" />
+  </form>
+</div>
+
+<!-- DELETE -->
+<div class="card">
+  <h2>Delete an Appointment</h2>
+  {{!--
+    Step 3 note:
+    Delete form is UI-only in this draft. Backend delete logic is implemented
+    in later steps.
+  --}}
+  <form action="/appointments/delete" method="POST">
+    {{!-- Delete remains a simple selector + submit UI for this draft phase. --}}
+    <label for="delete_appointmentID">Appointment to Delete:</label>
+    <select id="delete_appointmentID" name="appointmentID" required>
+      <option value="" disabled selected>Select an appointment</option>
+      <option value="1">1 - Nyota Uhura (2026-05-15 09:00)</option>
+      <option value="2">2 - Jadzia Dax (2026-05-16 11:30)</option>
+    </select>
+
+    <input type="submit" value="Delete Appointment" />
+  </form>
 </div>
