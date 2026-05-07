@@ -10,6 +10,8 @@ const { engine } = require('express-handlebars');
 const app = express();
 const PORT = process.env.PORT || 9116;
 
+const db = require('./database/db-connector');
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
