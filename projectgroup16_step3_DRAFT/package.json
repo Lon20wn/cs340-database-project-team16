@@ -11,7 +11,8 @@
   },
   "dependencies": {
     "express": "^4.19.2",
-    "express-handlebars": "^8.0.1"
+    "express-handlebars": "^8.0.1",
+    "mysql2": "^3.22.3"
   },
   "devDependencies": {
     "forever": "^4.0.3",
