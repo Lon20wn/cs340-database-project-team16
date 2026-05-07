@@ -7,7 +7,104 @@ Source URL: https://canvas.oregonstate.edu/
 --}}
 
 <h1>AppointmentTypes</h1>
+
+{{!--
+  Implementation summary:
+  This page shows planned CRUD support for AppointmentTypes using schema-aligned
+  sample values from the DDL and field naming consistent with the DML.
+--}}
+
+<!-- READ -->
 <div class="card">
-  <p>Browse appointment type catalog and manage scheduling metadata.</p>
-  <p class="small-note">Form sections are added in the next step.</p>
+  <h2>Browse Appointment Types</h2>
+  <p>Displays the appointment type catalog used when scheduling appointments.</p>
+  {{!-- Static sample rows are acceptable for Step 3 Draft. --}}
+  <table>
+    <thead>
+      <tr>
+        <th>typeID</th>
+        <th>description</th>
+        <th>durationInMinutes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>NP</td>
+        <td>New Patient</td>
+        <td>30</td>
+      </tr>
+      <tr>
+        <td>OVR</td>
+        <td>Office Visit Regular</td>
+        <td>15</td>
+      </tr>
+      <tr>
+        <td>PROC</td>
+        <td>Procedure</td>
+        <td>45</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- CREATE -->
+<div class="card">
+  <h2>Create an Appointment Type</h2>
+  {{!-- Field names reflect the DML Add Appointment Type query. --}}
+  <form action="/appointment-types/add" method="POST">
+    <label for="create_typeID">Type ID:</label>
+    <input type="text" id="create_typeID" name="typeID" maxlength="10" required />
+
+    <label for="create_description">Description:</label>
+    <input type="text" id="create_description" name="description" required />
+
+    <label for="create_durationInMinutes">Duration (minutes):</label>
+    <input type="number" id="create_durationInMinutes" name="durationInMinutes" min="1" required />
+
+    <input type="submit" value="Create Appointment Type" />
+  </form>
+</div>
+
+<!-- UPDATE -->
+<div class="card">
+  <h2>Update an Appointment Type</h2>
+  {{!-- Update form remains UI-only for Step 3 Draft. --}}
+  <form action="/appointment-types/update" method="POST">
+    <label for="update_typeID_lookup">Appointment Type to Update:</label>
+    <select id="update_typeID_lookup" name="typeIDLookup" required>
+      <option value="" disabled selected>Select an appointment type</option>
+      <option value="NP">NP - New Patient</option>
+      <option value="OVR">OVR - Office Visit Regular</option>
+      <option value="PROC">PROC - Procedure</option>
+      <option value="NOB">NOB - New OB</option>
+      <option value="OBR">OBR - OB Regular</option>
+    </select>
+
+    <label for="update_description">Description:</label>
+    <input type="text" id="update_description" name="description" />
+
+    <label for="update_durationInMinutes">Duration (minutes):</label>
+    <input type="number" id="update_durationInMinutes" name="durationInMinutes" min="1" />
+
+    <input type="submit" value="Update Appointment Type" />
+  </form>
+</div>
+
+<!-- DELETE -->
+<div class="card">
+  <h2>Delete an Appointment Type</h2>
+  {{!-- Delete remains a simple selector + submit UI for this draft phase. --}}
+  <form action="/appointment-types/delete" method="POST">
+    <label for="delete_typeID">Appointment Type to Delete:</label>
+    <select id="delete_typeID" name="typeID" required>
+      <option value="" disabled selected>Select an appointment type</option>
+      <option value="NP">NP - New Patient</option>
+      <option value="OVR">OVR - Office Visit Regular</option>
+      <option value="PROC">PROC - Procedure</option>
+      <option value="NOB">NOB - New OB</option>
+      <option value="OBR">OBR - OB Regular</option>
+    </select>
+
+    <input type="submit" value="Delete Appointment Type" />
+  </form>
 </div>
