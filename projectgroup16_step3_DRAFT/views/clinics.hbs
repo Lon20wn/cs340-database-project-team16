@@ -7,7 +7,87 @@ Source URL: https://canvas.oregonstate.edu/
 --}}
 
 <h1>Clinics</h1>
+
+{{!--
+  Implementation summary:
+  This page follows the same Step 3 draft pattern as the other entity pages so
+  the project UI stays consistent across all tables.
+--}}
+
+<!-- READ -->
 <div class="card">
-  <p>Browse clinic locations and manage clinic information.</p>
-  <p class="small-note">Form sections are added in the next step.</p>
+  <h2>Browse Clinics</h2>
+  <p>Displays all clinic locations in the system.</p>
+  {{!-- Static sample rows are acceptable for Step 3 Draft. --}}
+  <table class="clinics-table">
+    <thead>
+      <tr>
+        <th>clinicID</th>
+        <th>city</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>Corvallis</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>Salem</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>Eugene</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- CREATE -->
+<div class="card">
+  <h2>Add a Clinic</h2>
+  {{!-- Field names match the Clinics DML insert query. --}}
+  <form action="/clinics/add" method="POST">
+    <label for="create_city">City:</label>
+    <input type="text" id="create_city" name="city" required />
+
+    <input type="submit" value="Create Clinic" />
+  </form>
+</div>
+
+<!-- UPDATE -->
+<div class="card">
+  <h2>Update a Clinic</h2>
+  {{!-- Update form is UI-only for this Step 3 draft. --}}
+  <form action="/clinics/update" method="POST">
+    <label for="update_clinicID">Clinic to Update:</label>
+    <select id="update_clinicID" name="clinicID" required>
+      <option value="" disabled selected>Select a clinic</option>
+      <option value="1">1 - Corvallis</option>
+      <option value="2">2 - Salem</option>
+      <option value="3">3 - Eugene</option>
+    </select>
+
+    <label for="update_city">City:</label>
+    <input type="text" id="update_city" name="city" />
+
+    <input type="submit" value="Update Clinic" />
+  </form>
+</div>
+
+<!-- DELETE -->
+<div class="card">
+  <h2>Delete a Clinic</h2>
+  {{!-- Delete remains a simple selector + submit UI for this draft phase. --}}
+  <form action="/clinics/delete" method="POST">
+    <label for="delete_clinicID">Clinic to Delete:</label>
+    <select id="delete_clinicID" name="clinicID" required>
+      <option value="" disabled selected>Select a clinic</option>
+      <option value="1">1 - Corvallis</option>
+      <option value="2">2 - Salem</option>
+      <option value="3">3 - Eugene</option>
+    </select>
+
+    <input type="submit" value="Delete Clinic" />
+  </form>
 </div>
