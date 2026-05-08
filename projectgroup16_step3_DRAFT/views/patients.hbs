@@ -7,7 +7,164 @@ Source URL: https://canvas.oregonstate.edu/
 --}}
 
 <h1>Patients</h1>
+{{!--
+Implementation summary:
+This page is a placeholder for planned CRUD support for Patients using schema-aligned
+sample values from the DDL and field naming consistent with the DML.
+--}}
+
+<!-- READ -->
 <div class="card">
-  <p>Browse existing patients and perform patient-related CRUD operations.</p>
-  <p class="small-note">Form sections are added in the next step.</p>
+  <h2>Browse Existing Patients</h2>
+  <p>Displays list of existing patients and their information.</p>
+  {{!-- Static sample rows are acceptable for Step 3 Draft. --}}
+  <table>
+    <thead>
+      <tr>
+        <th>patientID</th>
+        <th>firstName</th>
+        <th>lastName</th>
+        <th>dateOfBirth</th>
+        <th>address</th>
+        <th>language</th>
+        <th>insurancePayor</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>Nyota</td>
+        <td>Uhura</td>
+        <td> 1972-03-26</td>
+        <td>1701 Enterprise Drive Corvallis, OR 97330</td>
+        <td>Swahili</td>
+        <td>United Healthcare</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>Jadzia</td>
+        <td>Dax</td>
+        <td>1988-01-01</td>
+        <td>10 Forward Avenue Corvallis, OR 97330</td>
+        <td>English</td>
+        <td>Self-pay</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>B'Elanna</td>
+        <td>Torres</td>
+        <td>1986-06-06</td>
+        <td>P.O. Box 709 Salem, OR 97301</td>
+        <td>Spanish</td>
+        <td>Blue Cross Blue Shield</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>Kira</td>
+        <td>Nerys</td>
+        <td>1991-09-15</td>
+        <td>74205 Promenade Lane Salem, OR 97301</td>
+        <td>English</td>
+        <td>Blue Cross Blue Shield</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>Beckett</td>
+        <td>Mariner</td>
+        <td>2000-04-19</td>
+        <td>24953 Federation Drive Eugene, OR 97401</td>
+        <td>English</td>
+        <td>Aetna</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- CREATE -->
+<div class="card">
+  <h2> Add A New Patient</h2>
+  <p> Add a new patient to the database by filling out the form below.</p>
+  {{!-- Field names reflect the DML Add Patient query. --}}
+  <form action="/patients/add" method="POST">
+    <label for="create_patientID">Patient ID:</label>
+    <input type="number" id="create_patientID" name="patientID" min=1 required />
+
+    <label for="create_firstName">First Name:</label>
+    <input type="text" id="create_firstName" name="firstName" required />
+
+    <label for="create_lastName">Last Name:</label>
+    <input type="text" id="create_lastName" name="lastName" required />
+
+    <label for="create_dateOfBirth">Date of Birth:</label>
+    <input type="date" id="create_dateOfBirth" name="dateOfBirth" required />
+
+    <label for="create_address">Address:</label>
+    <input type="text" id="create_address" name="address" required />
+
+    <label for="create_language">Language:</label>
+    <input type="text" id="create_language" name="language" required />
+
+    <label for="create_insurancePayor">Insurance Payor:</label>
+    <input type="text" id="create_insurancePayor" name="insurancePayor" required />
+
+    <input type="submit" value="Add" />
+  </form>
+</div>
+
+<!-- UPDATE -->
+<div class="card">
+  <h2>Update an Existing Patient</h2>
+  <p>Update any or all of an existing patient's information by filling out the form below.</p>
+  {{!-- Update form remains UI-only for Step 3 Draft. --}}
+  <form action="/patients/update" method="POST">
+    <label for="update_patientID_lookup">Patient to Update:</label>
+    <select id="update_patientID_lookup" name="patientIDLookup" required>
+      <option value="" disabled selected>Select a Patient</option>
+      <option value="1">1 - Nyota Uhura</option>
+      <option value="2">2 - Jadzia Dax</option>
+      <option value="3">3 - B'Elanna Torres</option>
+      <option value="4">4 - Kira Nerys</option>
+      <option value="5">5 - Beckett Mariner</option>
+    </select>
+
+    <label for="update_firstName">First Name:</label>
+    <input type="text" id="update_firstName" name="firstName" required />
+
+    <label for="update_lastName">Last Name:</label>
+    <input type="text" id="update_lastName" name="lastName" required />
+
+    <label for="update_dateOfBirth">Date of Birth:</label>
+    <input type="date" id="update_dateOfBirth" name="dateOfBirth" required />
+
+    <label for="update_address">Address:</label>
+    <input type="text" id="update_address" name="address" required />
+
+    <label for="update_language">Language:</label>
+    <input type="text" id="update_language" name="language" required />
+
+    <label for="update_insurancePayor">Insurance Payor:</label>
+    <input type="text" id="update_insurancePayor" name="insurancePayor" required />
+
+    <input type="submit" value="Update Patient" />
+  </form>
+</div>
+
+<!-- DELETE -->
+<div class="card">
+  <h2>Delete an Existing Patient</h2>
+  <p>Permanetly remove a patient from the database by selecting them below.</p>
+  {{!-- Delete remains a simple selector + submit UI for this draft phase. --}}
+  <form action="/patients/delete" method="POST">
+    <label for="delete_patientID">Patient to Delete:</label>
+    <select id="delete_patientID" name="patientID" required>
+      <option value="" disabled selected>Select a Patient</option>
+      <option value="1">1 - Nyota Uhura</option>
+      <option value="2">2 - Jadzia Dax</option>
+      <option value="3">3 - B'Elanna Torres</option>
+      <option value="4">4 - Kira Nerys</option>
+      <option value="5">5 - Beckett Mariner</option>
+    </select>
+
+    <input type="submit" value="Delete Patient" />
+  </form>
 </div>
