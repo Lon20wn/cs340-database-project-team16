@@ -7,7 +7,140 @@ Source URL: https://canvas.oregonstate.edu/
 --}}
 
 <h1>Providers</h1>
+
+{{!-- Implementation summary:
+This page is a placeholder for planned CRUD support for Providers using schema-aligned
+sample values from the DDL and field naming consistent with the DML.
+--}}
+
+<!-- READ -->
 <div class="card">
-  <p>Browse provider records and manage provider details.</p>
-  <p class="small-note">Form sections are added in the next step.</p>
+  <h2>Browse Providers</h2>
+  </2>
+  <p>Displays the list of providers and their information.</p>
+  {{!-- Static sample rows are acceptable for Step 3 Draft. --}}
+  <table>
+    <thead>
+      <tr>
+        <th>providerID</th>
+        <th>firstName</th>
+        <th>lastName</th>
+        <th>startDate</th>
+        <th>title</th>
+      <tr>
+    </thead>
+    <tbody>
+      </tr>
+      <tr>
+        <td>102</td>
+        <td>Katherine</td>
+        <td>Pulaski</td>
+        <td>2015-11-11</td>
+        <td>Doctor</td>
+      </tr>
+      <tr>
+        <td>113</td>
+        <td>Beverly</td>
+        <td>Crusher</td>
+        <td>2020-10-16</td>
+        <td>Doctor</td>
+      </tr>
+      <tr>
+        <td>249</td>
+        <td>Christine</td>
+        <td>Chapel</td>
+        <td>2017-03-06</td>
+        <td>Nurse</td>
+      </tr>
+      <tr>
+        <td>368</td>
+        <td>Julienne</td>
+        <td>Bashir</td>
+        <td>2021-02-12</td>
+        <td>Midwife</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- CREATE -->
+<div class="card">
+  <h2> Add a Provider</h2>
+  {{!-- Field names reflect the DML Add Provider query. --}}
+  <form action="/providers/add" method="POST">
+    <label for="create_providerID">Provider ID:</label>
+    <input type="number" id="create_providerID" name="providerID" min="100" required />
+
+    <label for="create_firstName">First Name:</label>
+    <input type="text" id="create_firstName" name="firstName" required />
+
+    <label for="create_lastName">Last Name:</label>
+    <input type="text" id="create_lastName" name="lastName" required />
+
+    <label for="create_startDate">Start Date:</label>
+    <input type="date" id="create_startDate" name="startDate" required />
+
+    <label for="create_title">Title:</label>
+    <select id="create_title" name="title" required>
+      <option value="" disabled selected>Select a title</option>
+      <option value="Doctor">Doctor</option>
+      <option value="Nurse">Nurse</option>
+      <option value="Midwife">Midwife</option>
+    </select>
+
+    <input type="submit" value="Add" />
+  </form>
+</div>
+
+<!-- UPDATE -->
+<div class="card">
+  <h2>Update a Provider</h2>
+  {{!-- Update form remains UI-only for Step 3 Draft. --}}
+  <form action="/providers/update" method="POST">
+    <label for="update_providerID_lookup">Provider to Update:</label>
+    <select id="update_providerID_lookup" name="providerIDLookup" required>
+      <option value="" disabled selected>Select a provider</option>
+      <option value="102">102 - Katherine Pulaski</option>
+      <option value="113">113 - Beverly Crusher</option>
+      <option value="249">249 - Christine Chapel</option>
+      <option value="368">368 - Julienne Bashir</option>
+    </select>
+
+    <label for="update_firstName">First Name:</label>
+    <input type="text" id="update_firstName" name="firstName" />
+
+    <label for="update_lastName">Last Name:</label>
+    <input type="text" id="update_lastName" name="lastName" />
+
+    <label for="update_startDate">Start Date:</label>
+    <input type="date" id="update_startDate" name="startDate" />
+
+    <label for="update_title">Title:</label>
+    <select id="update_title" name="title">
+      <option value="" disabled selected>Select a title</option>
+      <option value="Doctor">Doctor</option>
+      <option value="Nurse">Nurse</option>
+      <option value="Midwife">Midwife</option>
+    </select>
+
+    <input type="submit" value="Update Provider" />
+  </form>
+</div>
+
+<!-- DELETE -->
+<div class="card">
+  <h2>Delete a Provider</h2>
+  {{!-- Delete remains a simple selector + submit UI for this draft phase. --}}
+  <form action="/providers/delete" method="POST">
+    <label for="delete_providerID">Provider to Delete:</label>
+    <select id="delete_providerID" name="providerID" required>
+      <option value="" disabled selected>Select a provider</option>
+      <option value="102">102 - Katherine Pulaski</option>
+      <option value="113">113 - Beverly Crusher</option>
+      <option value="249">249 - Christine Chapel</option>
+      <option value="368">368 - Julienne Bashir</option>
+    </select>
+
+    <input type="submit" value="Delete Provider" />
+  </form>
 </div>
