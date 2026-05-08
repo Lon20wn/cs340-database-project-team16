@@ -149,3 +149,20 @@ ul {
 .btn-delete {
     background: #dc2626;
 }
+
+/* Adds a little extra horizontal space on the Clinics browse table. */
+.clinics-table th:first-child,
+.clinics-table td:first-child {
+    padding-right: 60px;
+}
+
+/* Adds extra horizontal spacing across AppointmentTypes browse columns. */
+.appointment-types-table th:nth-child(1),
+.appointment-types-table td:nth-child(1) {
+    padding-right: 80px;
+}
+
+.appointment-types-table th:nth-child(2),
+.appointment-types-table td:nth-child(2) {
+    padding-right: 80px;
+}
