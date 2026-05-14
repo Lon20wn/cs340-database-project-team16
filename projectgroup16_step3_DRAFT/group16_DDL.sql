@@ -45,36 +45,42 @@ CREATE OR REPLACE TABLE Clinics (
 
 /* Appointments: Records the details of the appointments scheduled for patients.
 
-    On Delete Set Null is used for providerID. If a provider is deleted, the appointment will still exist but the providerID
-    will be set to NULL, indicating the appointment is no longer associated with a provider. This maintains the integrity of the appointment
-    data and queries can be written to find all future appointments that don't have an associated provider.
+   ON DELETE RESTRICT is used for all foreign keys in the Appointments table. This means that if there are any appointments
+   associated with a foreign key (typeID, patientID, providerID, clinicID), the referenced record cannot be deleted. This ensures
+   that appointment data is not deleted which will be crucial for a clinic database and allows for accurate reporting and historical data analysis. 
 */
 CREATE OR REPLACE TABLE Appointments (
     appointmentID INT AUTO_INCREMENT NOT NULL UNIQUE,
     apptDateTime DATETIME NOT NULL,
     apptStatus VARCHAR(50) NOT NULL,
-    typeID VARCHAR(10),
-    patientID INT,
-    providerID INT,
-    clinicID INT,
-    CONSTRAINT fk_typeID FOREIGN KEY (typeID) REFERENCES AppointmentTypes(typeID),
-    CONSTRAINT fk_patientID FOREIGN KEY (patientID) REFERENCES Patients(patientID),
+    typeID VARCHAR(10) NOT NULL,
+    patientID INT NOT NULL,
+    providerID INT NOT NULL,
+    clinicID INT NOT NULL,
+    CONSTRAINT fk_typeID FOREIGN KEY (typeID) REFERENCES AppointmentTypes(typeID)
+    ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT fk_patientID FOREIGN KEY (patientID) REFERENCES Patients(patientID)
+    ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT fk_providerID FOREIGN KEY (providerID) REFERENCES Providers(providerID)
-    ON DELETE SET NULL,
-    CONSTRAINT fk_clinicID FOREIGN KEY (clinicID) REFERENCES Clinics(clinicID),
+    ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT fk_clinicID FOREIGN KEY (clinicID) REFERENCES Clinics(clinicID)
+    ON DELETE RESTRICT ON UPDATE CASCADE,
     PRIMARY KEY (appointmentID)
 );
 
 /* ProviderLocations: Represents the M:N relationship between Providers and Clinics, indicating which providers work at which clinics.
-   On Delete Cascade is used for providerID. If a provider is deleted, they will no longer be associated with any clinics they work at.
+   ON DELETE RESTRICT is used for all foreign keys so that if there are any appointments associated with a provider or clinic,
+   the provider or clinic cannot be deleted.
 */
 CREATE OR REPLACE TABLE ProviderLocations (
-    providerID INT,
-    clinicID INT,
+    locationID INT AUTO_INCREMENT NOT NULL UNIQUE,
+    providerID INT NOT NULL,
+    clinicID INT NOT NULL,
     FOREIGN KEY (providerID) REFERENCES Providers(providerID)
-    ON DELETE CASCADE,
-    FOREIGN KEY (clinicID) REFERENCES Clinics(clinicID),
-    PRIMARY KEY (providerID, clinicID)
+    ON DELETE RESTRICT ON UPDATE CASCADE,
+    FOREIGN KEY (clinicID) REFERENCES Clinics(clinicID)
+    ON DELETE RESTRICT ON UPDATE CASCADE,
+    PRIMARY KEY (locationID)
 );
 
 -- Insert sample data into the tables (Date format is YYYY-MM-DD)
