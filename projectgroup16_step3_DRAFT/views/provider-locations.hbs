@@ -9,9 +9,9 @@ Source URL: https://canvas.oregonstate.edu/
 <h1>Provider Locations</h1>
 
 {{!--
-  Implementation summary:
-  This page manages the many-to-many relationship between Providers and Clinics.
-  It follows the same Step 3 draft structure as the other entity pages.
+Implementation summary:
+This page manages the many-to-many relationship between Providers and Clinics.
+It follows the same Step 3 draft structure as the other entity pages.
 --}}
 
 <!-- READ -->
@@ -20,49 +20,67 @@ Source URL: https://canvas.oregonstate.edu/
   <p>Displays which providers work at which clinic locations.</p>
   {{!-- Static sample rows are acceptable for Step 3 Draft. --}}
   <div class="table-scroll">
-  <table>
-    <thead>
-      <tr>
-        <th>Location ID</th>
-        <th>Provider ID</th>
-        <th>Provider Name</th>
-        <th>Clinic ID</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>1</td>
-        <td>113</td>
-        <td>Beverly Crusher</td>
-        <td>1</td>
-        <td>
-          <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
-          <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
-        </td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td>113</td>
-        <td>Beverly Crusher</td>
-        <td>2</td>
-        <td>
-          <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
-          <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
-        </td>
-      </tr>
-      <tr>
-        <td>3</td>
-        <td>249</td>
-        <td>Christine Chapel</td>
-        <td>1</td>
-        <td>
-          <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
-          <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+    <table>
+      <thead>
+        <tr>
+          <th>Location ID</th>
+          <th>Provider ID</th>
+          <th>Provider Name</th>
+          <th>Clinic ID</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>113</td>
+          <td>Beverly Crusher</td>
+          <td>1</td>
+          <td>
+            <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
+            <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
+          </td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>113</td>
+          <td>Beverly Crusher</td>
+          <td>2</td>
+          <td>
+            <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
+            <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
+          </td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>249</td>
+          <td>Christine Chapel</td>
+          <td>1</td>
+          <td>
+            <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
+            <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
+          </td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>368</td>
+          <td>Julienne Bashir</td>
+          <td>3</td>
+          <td>
+            <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
+            <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
+          </td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>102</td>
+          <td>Katherine Pulaski</td>
+          <td>2</td>
+          <td>
+            <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
+            <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
+      </tbody>
+    </table>
   </div>
 </div>
 
@@ -128,6 +146,8 @@ Source URL: https://canvas.oregonstate.edu/
       <option value="1">1 - Beverly Crusher @ Corvallis</option>
       <option value="2">2 - Beverly Crusher @ Salem</option>
       <option value="3">3 - Christine Chapel @ Corvallis</option>
+      <option value="4">4 - Julienne Bashir @ Eugene</option>
+      <option value="5">5 - Katherine Pulaski @ Salem</option>
     </select>
 
     <input type="submit" value="Delete Provider Location" />
