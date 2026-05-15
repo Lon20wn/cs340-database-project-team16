@@ -149,6 +149,12 @@ ul {
     padding: 6px 10px;
     font-size: 12px;
     margin-right: 6px;
+    white-space: nowrap;
+}
+
+/* Prevent the Actions column from wrapping buttons onto separate lines. */
+td:last-child {
+    white-space: nowrap;
 }
 
 /* Primary action style for Edit links/buttons. */
@@ -159,6 +165,11 @@ ul {
 /* Danger action style for Delete links/buttons. */
 .btn-delete {
     background: #dc2626;
+}
+
+/* Wrap tables so they scroll horizontally inside the card instead of overflowing. */
+.card .table-scroll {
+    overflow-x: auto;
 }
 
 /* Tables have collapsed borders and left margin */
