@@ -6,12 +6,12 @@ Source: CS340 Web Application Technology Exploration and Node Part 2 walkthrough
 Source URL: https://canvas.oregonstate.edu/
 --}}
 
-<h1>AppointmentTypes</h1>
+<h1>Appointment Types</h1>
 
 {{!--
-  Implementation summary:
-  This page shows planned CRUD support for AppointmentTypes using schema-aligned
-  sample values from the DDL and field naming consistent with the DML.
+Implementation summary:
+This page shows planned CRUD support for AppointmentTypes using schema-aligned
+sample values from the DDL and field naming consistent with the DML.
 --}}
 
 <!-- READ -->
@@ -20,32 +20,63 @@ Source URL: https://canvas.oregonstate.edu/
   <p>Displays the appointment type catalog used when scheduling appointments.</p>
   {{!-- Static sample rows are acceptable for Step 3 Draft. --}}
   <div class="table-scroll">
-  <table class="appointment-types-table">
-    <thead>
-      <tr>
-        <th>ID Type</th>
-        <th>Description</th>
-        <th>Duration (minutes)</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>NP</td>
-        <td>New Patient</td>
-        <td>30</td>
-      </tr>
-      <tr>
-        <td>OVR</td>
-        <td>Office Visit Regular</td>
-        <td>15</td>
-      </tr>
-      <tr>
-        <td>PROC</td>
-        <td>Procedure</td>
-        <td>45</td>
-      </tr>
-    </tbody>
-  </table>
+    <table class="appointment-types-table">
+      <thead>
+        <tr>
+          <th>ID Type</th>
+          <th>Description</th>
+          <th>Duration (minutes)</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>NP</td>
+          <td>New Patient</td>
+          <td>30</td>
+          <td>
+            <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
+            <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
+          </td>
+        </tr>
+        <tr>
+          <td>OVR</td>
+          <td>Office Visit Regular</td>
+          <td>15</td>
+          <td>
+            <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
+            <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
+          </td>
+        </tr>
+        <tr>
+          <td>PROC</td>
+          <td>Procedure</td>
+          <td>45</td>
+          <td>
+            <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
+            <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
+          </td>
+        </tr>
+        <tr>
+          <td>NOB</td>
+          <td>New OB</td>
+          <td>30</td>
+          <td>
+            <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
+            <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
+          </td>
+        </tr>
+        <tr>
+          <td>OBR</td>
+          <td>OB Regular</td>
+          <td>15</td>
+          <td>
+            <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
+            <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>
 

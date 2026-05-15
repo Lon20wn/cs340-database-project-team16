@@ -9,9 +9,9 @@ Source URL: https://canvas.oregonstate.edu/
 <h1>Clinics</h1>
 
 {{!--
-  Implementation summary:
-  This page follows the same Step 3 draft pattern as the other entity pages so
-  the project UI stays consistent across all tables.
+Implementation summary:
+This page follows the same Step 3 draft pattern as the other entity pages so
+the project UI stays consistent across all tables.
 --}}
 
 <!-- READ -->
@@ -24,20 +24,33 @@ Source URL: https://canvas.oregonstate.edu/
       <tr>
         <th>Clinic ID</th>
         <th>City</th>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
       <tr>
         <td>1</td>
         <td>Corvallis</td>
+        <td>
+          <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
+          <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
+        </td>
       </tr>
       <tr>
         <td>2</td>
         <td>Salem</td>
+        <td>
+          <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
+          <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
+        </td>
       </tr>
       <tr>
         <td>3</td>
         <td>Eugene</td>
+        <td>
+          <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
+          <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
+        </td>
       </tr>
     </tbody>
   </table>

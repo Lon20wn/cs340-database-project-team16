@@ -8,32 +8,34 @@ Source URL: https://canvas.oregonstate.edu/
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Janeway's OBGYN Association - Step 3 Draft</title>
   <link rel="stylesheet" href="/style.css" />
 </head>
+
 <body>
   {{!--
-    Shared layout note:
-    All page-specific content is injected into {{{body}}}, so nav/theme behavior
-    only needs to be maintained in one file.
+  Shared layout note:
+  All page-specific content is injected into {{{body}}}, so nav/theme behavior
+  only needs to be maintained in one file.
   --}}
   <nav>
     <div class="nav-links">
       <a href="/">Home</a>
       <a href="/patients">Patients</a>
-      <a href="/appointment-types">AppointmentTypes</a>
+      <a href="/appointment-types">Appointment Types</a>
       <a href="/providers">Providers</a>
       <a href="/clinics">Clinics</a>
       <a href="/appointments">Appointments</a>
-      <a href="/provider-locations">ProviderLocations</a>
+      <a href="/provider-locations">Provider Locations</a>
     </div>
     {{!--
-      UI enhancement note:
-      Theme toggle switches between light and dark mode for readability.
-      Preference is stored locally in the browser using localStorage.
+    UI enhancement note:
+    Theme toggle switches between light and dark mode for readability.
+    Preference is stored locally in the browser using localStorage.
     --}}
     <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark mode">🌙</button>
   </nav>
@@ -64,4 +66,5 @@ Source URL: https://canvas.oregonstate.edu/
     });
   </script>
 </body>
+
 </html>
