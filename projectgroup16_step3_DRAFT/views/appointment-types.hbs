@@ -18,63 +18,38 @@ sample values from the DDL and field naming consistent with the DML.
 <div class="card">
   <h2>Browse Appointment Types</h2>
   <p>Displays the appointment type catalog used when scheduling appointments.</p>
-  {{!-- Static sample rows are acceptable for Step 3 Draft. --}}
   <div class="table-scroll">
     <table class="appointment-types-table">
-      <thead>
+      <thead> {{! For the table header row, we print the DB attribute names }}
         <tr>
-          <th>ID Type</th>
-          <th>Description</th>
-          <th>Duration (minutes)</th>
-          <th>Actions</th>
+          {{#each appointment_types.[0]}}
+          <th>
+            {{@key}}
+          </th>
+          {{/each}}
+          <th></th>
         </tr>
       </thead>
       <tbody>
+        {{! For each row, print the typeID, description, and durationInMinutes }}
+        {{#each appointment_types}}
         <tr>
-          <td>NP</td>
-          <td>New Patient</td>
-          <td>30</td>
-          <td>
-            <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
-            <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
-          </td>
+          <td>{{this.typeID}}</td>
+          <td>{{this.description}}</td>
+          <td>{{this.durationInMinutes}}</td>
+
+          
+            {{! DELETE form }}
+            <form id='delete_appointment_type_form' method="POST" action='/appointment-types/delete'>
+              <input type="hidden" name="delete_typeID" value="{{this.typeID}}" />
+              <td>
+                <button type='submit'>
+                Delete
+                </button>
+              </td>
+            </form>
         </tr>
-        <tr>
-          <td>OVR</td>
-          <td>Office Visit Regular</td>
-          <td>15</td>
-          <td>
-            <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
-            <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
-          </td>
-        </tr>
-        <tr>
-          <td>PROC</td>
-          <td>Procedure</td>
-          <td>45</td>
-          <td>
-            <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
-            <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
-          </td>
-        </tr>
-        <tr>
-          <td>NOB</td>
-          <td>New OB</td>
-          <td>30</td>
-          <td>
-            <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
-            <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
-          </td>
-        </tr>
-        <tr>
-          <td>OBR</td>
-          <td>OB Regular</td>
-          <td>15</td>
-          <td>
-            <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
-            <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
-          </td>
-        </tr>
+        {{/each}}
       </tbody>
     </table>
   </div>
@@ -84,15 +59,15 @@ sample values from the DDL and field naming consistent with the DML.
 <div class="card">
   <h2>Create an Appointment Type</h2>
   {{!-- Field names reflect the DML Add Appointment Type query. --}}
-  <form action="/appointment-types/add" method="POST">
+  <form class='cuForm' id="create_appointment_type_form" method="POST" action='/appointment-types/create'>
     <label for="create_typeID">Type ID:</label>
-    <input type="text" id="create_typeID" name="typeID" maxlength="10" required />
+    <input type="text" id="create_typeID" name="create_typeID" maxlength="10" required />
 
     <label for="create_description">Description:</label>
-    <input type="text" id="create_description" name="description" required />
+    <input type="text" id="create_description" name="create_description" required />
 
     <label for="create_durationInMinutes">Duration (minutes):</label>
-    <input type="number" id="create_durationInMinutes" name="durationInMinutes" min="1" required />
+    <input type="number" id="create_durationInMinutes" name="create_durationInMinutes" min="1" required />
 
     <input type="submit" value="Create Appointment Type" />
   </form>
@@ -102,42 +77,23 @@ sample values from the DDL and field naming consistent with the DML.
 <div class="card">
   <h2>Update an Appointment Type</h2>
   {{!-- Update form remains UI-only for Step 3 Draft. --}}
-  <form action="/appointment-types/update" method="POST">
+  <form class='cuForm' id="update_appointment_type_from" method="POST" action='/appointment-types/update'>
     <label for="update_typeID_lookup">Appointment Type to Update:</label>
-    <select id="update_typeID_lookup" name="typeIDLookup" required>
+    <select id="update_typeID_lookup" name="update_typeID" required>
       <option value="" disabled selected>Select an appointment type</option>
-      <option value="NP">NP - New Patient</option>
-      <option value="OVR">OVR - Office Visit Regular</option>
-      <option value="PROC">PROC - Procedure</option>
-      <option value="NOB">NOB - New OB</option>
-      <option value="OBR">OBR - OB Regular</option>
+      {{#each appointment_types}}
+      <option value="{{this.typeID}}" required>
+        {{this.typeID}} - {{this.description}}
+      </option>
+      {{/each}}
     </select>
 
     <label for="update_description">Description:</label>
-    <input type="text" id="update_description" name="description" />
+    <input type="text" id="update_description" name="update_description" />
 
     <label for="update_durationInMinutes">Duration (minutes):</label>
-    <input type="number" id="update_durationInMinutes" name="durationInMinutes" min="1" />
+    <input type="number" id="update_durationInMinutes" name="update_durationInMinutes" min="1" />
 
     <input type="submit" value="Update Appointment Type" />
-  </form>
-</div>
-
-<!-- DELETE -->
-<div class="card">
-  <h2>Delete an Appointment Type</h2>
-  {{!-- Delete remains a simple selector + submit UI for this draft phase. --}}
-  <form action="/appointment-types/delete" method="POST">
-    <label for="delete_typeID">Appointment Type to Delete:</label>
-    <select id="delete_typeID" name="typeID" required>
-      <option value="" disabled selected>Select an appointment type</option>
-      <option value="NP">NP - New Patient</option>
-      <option value="OVR">OVR - Office Visit Regular</option>
-      <option value="PROC">PROC - Procedure</option>
-      <option value="NOB">NOB - New OB</option>
-      <option value="OBR">OBR - OB Regular</option>
-    </select>
-
-    <input type="submit" value="Delete Appointment Type" />
   </form>
 </div>

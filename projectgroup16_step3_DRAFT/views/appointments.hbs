@@ -27,89 +27,40 @@ see planned CRUD coverage for the Appointments entity.
   <div class="table-scroll">
     <table>
       <thead>
-        {{!--
-        Using schema-aligned column names here helps reviewers map the UI to the
-        submitted DDL/DML files more easily.
-        --}}
+       {{! For the table header row, we print th DB attribute names }}
         <tr>
-          <th>Appointment ID</th>
-          <th>Appointment Date/Time</th>
-          <th>Appointment Status</th>
-          <th>Type ID</th>
-          <th>Patient ID</th>
-          <th>Provider ID</th>
-          <th>Clinic ID</th>
-          <th>Actions</th>
-        </tr>
+          {{#each appointments.[0]}}
+          <th>
+            {{@key}}
+          </th>
+          {{/each}}
+          <th></th>
       </thead>
       <tbody>
-        {{!-- Static sample rows for Step 3 Draft. --}}
+        {{! For each row, print the appointmentID, apptDateTime, apptStatus, typeID, patientID, providerID, and clinicID
+        }}
+        {{#each appointments}}
         <tr>
-          <td>1</td>
-          <td>2026-07-15 14:30</td>
-          <td>Scheduled</td>
-          <td>NP</td>
-          <td>2</td>
-          <td>113</td>
-          <td>1</td>
-          <td>
-            {{!-- Placeholder actions route to a simple not-implemented message. --}}
-            <a class="btn-edit" href="/not-implemented?feature=appointments-edit">Edit</a>
-            <a class="btn-delete" href="/not-implemented?feature=appointments-delete">Delete</a>
-          </td>
+          <td>{{this.appointmentID}}</td>
+          <td>{{this.apptDateTime}}</td>
+          <td>{{this.apptStatus}}</td>
+          <td>{{this.typeID}}</td>
+          <td>{{this.patientID}}</td>
+          <td>{{this.providerID}}</td>
+          <td>{{this.clinicID}}</td>
+
+          {{! DELETE form }}
+          <form id="delete_appointment_form" method="POST" action="/appointments/delete">
+            <input type="hidden" name="delete_appointmentID" value="{{this.appointmentID}}" />
+            <input type="hidden" name="delete_apptDateTime" value="{{this.apptDateTime}}" />
+            <td>
+              <button type="submit">
+                Delete
+              </button>
+            </td>
+          </form>
         </tr>
-        <tr>
-          <td>2</td>
-          <td>2026-03-31 13:00</td>
-          <td>Completed</td>
-          <td>OVR</td>
-          <td>4</td>
-          <td>102</td>
-          <td>2</td>
-          <td>
-            <a class="btn-edit" href="/not-implemented?feature=appointments-edit">Edit</a>
-            <a class="btn-delete" href="/not-implemented?feature=appointments-delete">Delete</a>
-          </td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>2026-04-28 9:30</td>
-          <td>Cancelled</td>
-          <td>OVR</td>
-          <td>1</td>
-          <td>249</td>
-          <td>1</td>
-          <td>
-            <a class="btn-edit" href="/not-implemented?feature=appointments-edit">Edit</a>
-            <a class="btn-delete" href="/not-implemented?feature=appointments-delete">Delete</a>
-          </td>
-        </tr>
-        <tr>
-          <td>4</td>
-          <td>2025-12-20 10:00</td>
-          <td>Completed</td>
-          <td>NOB</td>
-          <td>5</td>
-          <td>368</td>
-          <td>3</td>
-          <td>
-            <a class="btn-edit" href="/not-implemented?feature=appointments-edit">Edit</a>
-            <a class="btn-delete" href="/not-implemented?feature=appointments-delete">Delete</a>
-          </td>
-        </tr>
-        <td>5</td>
-        <td>2026-08-09 15:00</td>
-        <td>Scheduled</td>
-        <td>PROC</td>
-        <td>3</td>
-        <td>113</td>
-        <td>2</td>
-        <td>
-          <a class="btn-edit" href="/not-implemented?feature=appointments-edit">Edit</a>
-          <a class="btn-delete" href="/not-implemented?feature=appointments-delete">Delete</a>
-        </td>
-        </tr>
-        <tr>
+        {{/each}}
       </tbody>
     </table>
   </div>

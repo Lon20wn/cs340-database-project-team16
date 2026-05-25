@@ -22,6 +22,7 @@ app.use(express.static('public'));
 app.engine('.hbs', engine({ extname: '.hbs' }));
 app.set('view engine', '.hbs');
 
+// READ ROUTES
 // Step 3 Draft routes:
 // These routes are intentionally lightweight and primarily serve browsable UI pages.
 app.get('/', (req, res) => {
@@ -32,8 +33,22 @@ app.get('/patients', (req, res) => {
   res.render('patients');
 });
 
-app.get('/appointment-types', (req, res) => {
-  res.render('appointment-types');
+app.get('/appointment-types', async function (req, res) {
+  try {
+    // Create and execute our queries
+    // In query1 we use a JOIn clause to display the names of the homeworlds
+    const query1 = `SELECT AppointmentTypes.typeID, AppointmentTypes.description, AppointmentTypes.durationInMinutes FROM AppointmentTypes;`;
+    const [appointment_types] = await db.query(query1);
+
+    // Render the appointment-types.hbs file, and also send the renderer
+    // an object that contains our AppointmentTypes information
+    res.render('appointment-types', { appointment_types: appointment_types });
+  }
+  catch (error) {
+    console.error('Error executing queries:', error);
+    // Send a generic error message to the browser
+    res.status(500).send('An error occured while executing the database queries.');
+  }
 });
 
 app.get('/providers', (req, res) => {
@@ -44,12 +59,105 @@ app.get('/clinics', (req, res) => {
   res.render('clinics');
 });
 
-app.get('/appointments', (req, res) => {
-  res.render('appointments');
+app.get('/appointments', async function (req, res) {
+  try {
+    // Create and execute our queries
+    const query1 = `SELECT Appointments.appointmentID, Appointments.apptDateTime, Appointments.apptStatus, Appointments.typeID,
+                  Appointments.patientID, Appointments.providerID, Appointments.clinicID FROM Appointments;`;
+    const [appointments] = await db.query(query1);
+
+    // Render the appointments.hbs file, and also send the renderer
+    // an object that contains our Appointments information
+    res.render('appointments', { appointments: appointments });
+  }
+  catch (error) {
+    console.error('Error executing queries:', error);
+    res.status(500).send('An error occurred while executing the database queries.');
+  }
 });
 
-app.get('/provider-locations', (req, res) => {
-  res.render('provider-locations');
+
+// CREATE ROUTES
+app.post('/appointment-types/create', async function (req, res) {
+  try {
+    // Parse frontend form information
+    let data = req.body;
+
+    // Create and execute our queries
+    // Using parameterized queries (Prevents SQL injection attacks)
+    const query1 = `CALL sp_CreateAppointmentType(?, ?, ?);`;
+
+    await db.query(query1, [
+      data.create_typeID,
+      data.create_description,
+      data.create_durationInMinutes,
+    ]);
+
+    console.log(`CREATE appointment_type. typeID: ${data.create_typeID} ` +
+      ` Description: ${data.create_description}`);
+    // Redirect the user to the updated webpage
+    res.redirect('/appointment-types');
+  }
+  catch (error) {
+    console.error('Error executing queries:', error);
+    // Send a generic error message to the browser
+    res.status(500).send('An error occurred while executing the database queries.');
+  }
+});
+
+
+
+// UPDATE ROUTES
+app.post('/appointment-types/update', async function (req, res) {
+  try {
+    // Parse frontend form information
+    const data = req.body;
+
+    // Create and execute our queries
+    // Using parameterized queries (Prevents SQL injection attacks)
+    const query1 = `CALL sp_UpdateAppointmentType(?, ?, ?);`;
+
+    await db.query(query1, [
+      data.update_typeID,
+      data.update_description,
+      data.update_durationInMinutes,
+    ]);
+
+    console.log(`UPDATE appointment_type. typeID: ${data.update_typeID} ` +
+      ` Description: ${data.update_description}`);
+
+    // Redirect the user to the updated webpage
+    res.redirect('/appointment-types');
+  }
+  catch (error) {
+    console.error('Error executing queries:', error);
+    // Send a generic error message to the browser
+    res.status(500).send('An error occurred while executing the database queries.');
+  }
+});
+
+
+// DELETE ROUTES
+app.post('/appointment-types/delete', async function (req, res) {
+  try {
+    // Parse frontend form information
+    let data = req.body;
+
+    // Create and execute our query
+    // Using parameterized queries (Prevents SQL injection attacks)
+    const query1 = `CALL sp_DeleteAppointmentType(?);`;
+    await db.query(query1, [data.delete_typeID]);
+
+    console.log(`DELETE appointment_type. typeID: ${data.delete_typeID}`);
+
+    // Redirect the user to the updated webpage
+    res.redirect('/appointment-types');
+  }
+  catch (error) {
+    console.error('Error executing queries:', error);
+    // Send a generic error message to the browser
+    res.status(500).send('Unable to delete appointment type. It may be referenced in an appointment record.');
+  }
 });
 
 // Step 3 draft placeholder endpoint:
