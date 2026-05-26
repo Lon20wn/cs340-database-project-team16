@@ -21,37 +21,34 @@ the project UI stays consistent across all tables.
   {{!-- Static sample rows are acceptable for Step 3 Draft. --}}
   <table class="clinics-table">
     <thead>
+      {{! For the table header row, we print the DB attribute names}}
       <tr>
-        <th>Clinic ID</th>
-        <th>City</th>
-        <th>Actions</th>
+        {{#each clinic.[0]}}
+        <th>
+          {{@key}}
+        </th>
+        {{/each}}
+        <th></th>
       </tr>
     </thead>
     <tbody>
+      {{! For each row, print the clinicID and city}}
+      {{#each clinic}}
       <tr>
-        <td>1</td>
-        <td>Corvallis</td>
-        <td>
-          <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
-          <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
-        </td>
+        <td>{{this.clinicID}}</td>
+        <td>{{this.city}}</td>
+
+        {{! DELETE form}}
+        <form id="delete_clinic_form" method="POST" action="/clinics/delete">
+          <input type="hidden" name="delete_clinicID" value="{{this.clinicID}}" />
+          <td>
+            <button type="submit">
+              Delete
+            </button>
+          </td>
+        </form>
       </tr>
-      <tr>
-        <td>2</td>
-        <td>Salem</td>
-        <td>
-          <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
-          <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
-        </td>
-      </tr>
-      <tr>
-        <td>3</td>
-        <td>Eugene</td>
-        <td>
-          <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
-          <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
-        </td>
-      </tr>
+      {{/each}}
     </tbody>
   </table>
 </div>
@@ -60,9 +57,9 @@ the project UI stays consistent across all tables.
 <div class="card">
   <h2>Add a Clinic</h2>
   {{!-- Field names match the Clinics DML insert query. --}}
-  <form action="/clinics/add" method="POST">
+  <form class="'cuForm" id="create_clinic_form" method="POST" action="/clinics/create">
     <label for="create_city">City:</label>
-    <input type="text" id="create_city" name="city" required />
+    <input type="text" id="create_city" name="create_city" required />
 
     <input type="submit" value="Create Clinic" />
   </form>
@@ -72,35 +69,20 @@ the project UI stays consistent across all tables.
 <div class="card">
   <h2>Update a Clinic</h2>
   {{!-- Update form is UI-only for this Step 3 draft. --}}
-  <form action="/clinics/update" method="POST">
+  <form class='cuForm' id='update_clinic' method="POST" action="/clinics/update">
     <label for="update_clinicID">Clinic to Update:</label>
-    <select id="update_clinicID" name="clinicID" required>
+    <select id="update_clinicID" name="update_clinicID" required>
       <option value="" disabled selected>Select a clinic</option>
-      <option value="1">1 - Corvallis</option>
-      <option value="2">2 - Salem</option>
-      <option value="3">3 - Eugene</option>
+      {{#each clinic}}
+      <option value="{{this.clinicID}}" required>
+        {{this.clinicID}} - {{this.city}}
+      </option>
+      {{/each}}
     </select>
 
     <label for="update_city">City:</label>
-    <input type="text" id="update_city" name="city" />
+    <input type="text" id="update_city" name="update_city" />
 
     <input type="submit" value="Update Clinic" />
-  </form>
-</div>
-
-<!-- DELETE -->
-<div class="card">
-  <h2>Delete a Clinic</h2>
-  {{!-- Delete remains a simple selector + submit UI for this draft phase. --}}
-  <form action="/clinics/delete" method="POST">
-    <label for="delete_clinicID">Clinic to Delete:</label>
-    <select id="delete_clinicID" name="clinicID" required>
-      <option value="" disabled selected>Select a clinic</option>
-      <option value="1">1 - Corvallis</option>
-      <option value="2">2 - Salem</option>
-      <option value="3">3 - Eugene</option>
-    </select>
-
-    <input type="submit" value="Delete Clinic" />
   </form>
 </div>
