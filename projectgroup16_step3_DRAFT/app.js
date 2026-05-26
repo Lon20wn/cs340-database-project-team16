@@ -22,15 +22,52 @@ app.use(express.static('public'));
 app.engine('.hbs', engine({ extname: '.hbs' }));
 app.set('view engine', '.hbs');
 
-// READ ROUTES
+/*
+-------------------------------------------------------------
+----------------------- READ ROUTES -------------------------
+-------------------------------------------------------------
+*/
+
 // Step 3 Draft routes:
 // These routes are intentionally lightweight and primarily serve browsable UI pages.
 app.get('/', (req, res) => {
   res.render('home');
 });
 
-app.get('/patients', (req, res) => {
-  res.render('patients');
+// READ patients
+// Purpose:
+// - Fetch all patient rows from the Patients table
+// - Render the patients.hbs page with live DB data
+// Notes:
+// - The view will receive an array named `patients`
+// - Each object in the array has keys matching selected column names
+app.get('/patients', async function (req, res) {
+  try {
+    // Query all patient fields needed for the browse table
+    const query1 = `
+      SELECT
+        patientID,
+        firstName,
+        lastName,
+        dateOfBirth,
+        address,
+        language,
+        insurancePayor
+      FROM Patients;
+    `;
+
+    const [patients] = await db.query(query1);
+
+    // Render template and pass DB results to Handlebars
+    res.render('patients', { patients: patients });
+  }
+  catch (error) {
+    // Server-side logging for debugging
+    console.error('Error executing queries:', error);
+
+    // Client-facing generic error message.
+    res.status(500).send('An error occurred while executing the database queries.');
+  }
 });
 
 app.get('/appointment-types', async function (req, res) {
@@ -104,8 +141,53 @@ app.get('/provider-locations', (req, res) => {
   res.render('provider-locations');
 });
 
+/*
+-------------------------------------------------------------
+----------------------- CREATE ROUTES -----------------------
+-------------------------------------------------------------
+*/
 
-// CREATE ROUTES
+// CREATE patient
+// Purpose:
+// - Insert one new patient row via stored procedure
+// Form dependency:
+// - Expects request body fields:
+//   create_firstName, create_lastName, create_dateOfBirth,
+//   create_address, create_language, create_insurancePayor
+// DB dependency:
+// - Requires stored procedure: sp_CreatePatient(IN..., OUT p_patientID)
+app.post('/patients/create', async function (req, res) {
+  try {
+    // Parse submitted form data
+    let data = req.body;
+
+    // Use stored procedure for insertion
+    // @new_id captures output from the procedure call pattern used elsewhere in this app
+    const query1 = `CALL sp_CreatePatient(?, ?, ?, ?, ?, ?, @new_id);`;
+
+    // Execute with parameterized values (safe against SQL injection)
+    const [[[rows]]] = await db.query(query1, [
+      data.create_firstName,
+      data.create_lastName,
+      data.create_dateOfBirth,
+      data.create_address,
+      data.create_language,
+      data.create_insurancePayor
+    ]);
+
+    console.log(
+      `CREATE patient. ID: ${rows.new_id} Name: ${data.create_firstName} ${data.create_lastName}`
+    );
+
+    // PRG pattern: redirect user after successful POST
+    res.redirect('/patients');
+  }
+  catch (error) {
+    console.error('Error executing queries:', error);
+    res.status(500).send('An error occurred while executing the database queries.');
+  }
+});
+
 app.post('/appointment-types/create', async function (req, res) {
   try {
     // Parse frontend form information
@@ -192,7 +274,52 @@ app.post('/clinics/create', async function (req, res) {
   }
 });
 
-// UPDATE ROUTES
+/*
+-------------------------------------------------------------
+----------------------- UPDATE ROUTES -----------------------
+-------------------------------------------------------------
+*/
+
+// UPDATE patient
+// Purpose:
+// - Update an existing patient row by patientID using stored procedure
+// Form dependency:
+// - Expects request body fields:
+//   update_patientID, update_firstName, update_lastName, update_dateOfBirth,
+//   update_address, update_language, update_insurancePayor
+// DB dependency:
+// - Requires stored procedure: sp_UpdatePatient(...)
+app.post('/patients/update', async function (req, res) {
+  try {
+    // Parse frontend form information
+    const data = req.body;
+
+    // Create and execute our query
+    // Using parameterized queries (Prevents SQL injection attacks)
+    const query1 = `CALL sp_UpdatePatient(?, ?, ?, ?, ?, ?, ?);`;
+
+    await db.query(query1, [
+      data.update_patientID,
+      data.update_firstName,
+      data.update_lastName,
+      data.update_dateOfBirth,
+      data.update_address,
+      data.update_language,
+      data.update_insurancePayor
+    ]);
+
+    console.log(`UPDATE patient. ID: ${data.update_patientID}`);
+
+    // Redirect back to browse page so user sees updated values
+    res.redirect('/patients');
+  }
+  catch (error) {
+    console.error('Error executing queries:', error);
+    // Send a generic error message to the browser
+    res.status(500).send('An error occurred while executing the database queries.');
+  }
+});
+
 app.post('/appointment-types/update', async function (req, res) {
   try {
     // Parse frontend form information
@@ -278,7 +405,41 @@ app.post('/clinics/update', async function (req, res) {
   }
 });
 
-// DELETE ROUTES
+/*
+-------------------------------------------------------------
+----------------------- DELETE ROUTES -----------------------
+-------------------------------------------------------------
+*/
+
+// DELETE patient
+// Purpose:
+// - Delete one patient row by patientID via stored procedure
+// Form dependency:
+// - Expects request body field: delete_patientID
+// DB dependency:
+// - Requires stored procedure: sp_DeletePatient(IN p_patientID INT)
+// - May fail if FK constraints exist (e.g., patient referenced in Appointments)
+app.post('/patients/delete', async function (req, res) {
+  try {
+    let data = req.body;
+
+    // Create and execute our query
+    // Using parameterized queries (Prevents SQL injection attacks)
+    const query1 = `CALL sp_DeletePatient(?);`;
+    await db.query(query1, [data.delete_patientID]);
+
+    console.log(`DELETE patient. ID: ${data.delete_patientID}`);
+
+    // Redirect the user to the updated webpage data
+    res.redirect('/patients');
+  }
+  catch (error) {
+    console.error('Error executing queries:', error);
+        // Send error message to the browser
+    res.status(500).send('Unable to delete patient. It may be referenced by an appointment record.');
+  }
+});
+
 app.post('/appointment-types/delete', async function (req, res) {
   try {
     // Parse frontend form information
