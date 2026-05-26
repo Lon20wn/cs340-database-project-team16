@@ -27,7 +27,7 @@ see planned CRUD coverage for the Appointments entity.
   <div class="table-scroll">
     <table>
       <thead>
-       {{! For the table header row, we print th DB attribute names }}
+        {{! For the table header row, we print th DB attribute names }}
         <tr>
           {{#each appointments.[0]}}
           <th>
@@ -74,54 +74,46 @@ see planned CRUD coverage for the Appointments entity.
   Form field names are aligned to DML variable intent (apptDateTime,
   apptStatus, typeID, patientID, providerID, clinicID).
   --}}
-  <form action="/appointments/add" method="POST">
+  <form class='cuForm' id='create_appointment_form' method='POST' action="/appointments/create">
     {{!-- Date and time are collected together to reflect apptDateTime in SQL. --}}
     <label for="create_apptDateTime">Appointment Date/Time:</label>
-    <input type="datetime-local" id="create_apptDateTime" name="apptDateTime" required />
+    <input type="datetime-local" id="create_apptDateTime" name="create_apptDateTime" required />
 
     <label for="create_apptStatus">Appointment Status:</label>
-    <select id="create_apptStatus" name="apptStatus" required>
-      <option value="" disabled selected>Select status</option>
-      <option value="Scheduled">Scheduled</option>
-      <option value="Completed">Completed</option>
-      <option value="Cancelled">Cancelled</option>
+    <select id="create_apptStatus" name="create_apptStatus" required>
+      <option value="Scheduled" selected>Scheduled</option>
     </select>
 
     <label for="create_typeID">Appointment Type:</label>
-    <select id="create_typeID" name="typeID" required>
+    <select id="create_typeID" name="create_typeID" required>
       <option value="" disabled selected>Select an appointment type</option>
-      <option value="NP">NP - New Patient</option>
-      <option value="OVR">OVR - Office Visit Regular</option>
-      <option value="PROC">PROC - Procedure</option>
-      <option value="NOB">NOB - New OB</option>
-      <option value="OBR">OBR - OB Regular</option>
+      {{#each appointment_types}}
+      <option value='{{this.typeID}}' required>{{this.typeID}}</option>
+      {{/each}}
     </select>
 
     <label for="create_patientID">Patient:</label>
-    <select id="create_patientID" name="patientID" required>
+    <select id="create_patientID" name="create_patientID" required>
       <option value="" disabled selected>Select a patient</option>
-      <option value="1">1 - Nyota Uhura</option>
-      <option value="2">2 - Jadzia Dax</option>
-      <option value="3">3 - B'Elanna Torres</option>
-      <option value="4">4 - Kira Nerys</option>
-      <option value="5">5 - Beckett Mariner</option>
+      {{#each patient_IDs}}
+      <option value="{{this.patientID}}" required>{{this.patientID}} - {{this.firstName}} {{this.lastName}}</option>
+      {{/each}}
     </select>
 
     <label for="create_providerID">Provider:</label>
-    <select id="create_providerID" name="providerID" required>
+    <select id="create_providerID" name="create_providerID" required>
       <option value="" disabled selected>Select a provider</option>
-      <option value="113">113 - Beverly Crusher</option>
-      <option value="249">249 - Christine Chapel</option>
-      <option value="368">368 - Julienne Bashir</option>
-      <option value="102">102 - Katherine Pulaski</option>
+      {{#each provider_IDs}}
+      <option value="{{this.providerID}}" required>{{this.providerID}} - {{this.title}} {{this.lastName}}</option>
+      {{/each}}
     </select>
 
     <label for="create_clinicID">Clinic:</label>
-    <select id="create_clinicID" name="clinicID" required>
+    <select id="create_clinicID" name="create_clinicID" required>
       <option value="" disabled selected>Select a clinic</option>
-      <option value="1">1 - Corvallis</option>
-      <option value="2">2 - Salem</option>
-      <option value="3">3 - Eugene</option>
+      {{#each clinic_IDs}}
+      <option value="{{this.clinicID}}" required>{{this.clinicID}} - {{this.city}}</option>
+      {{/each}}
     </select>
 
     <input type="submit" value="Create Appointment" />
@@ -136,80 +128,61 @@ see planned CRUD coverage for the Appointments entity.
   Update form is UI-only in this draft. Backend update logic is implemented
   in later steps.
   --}}
-  <form action="/appointments/update" method="POST">
+  <form class="cuForm" id="update_appointment_form" method="POST" action="/appointments/update">
     {{!-- Update options mirror the DML update query inputs for this entity. --}}
     <label for="update_appointmentID">Appointment to Update:</label>
-    <select id="update_appointmentID" name="appointmentID" required>
+    <select id="update_appointmentID" name="update_appointmentID" required>
       <option value="" disabled selected>Select an appointment</option>
-      <option value="1">1 - Jadzia Dax (2026-07-15 14:30)</option>
-      <option value="2">2 - Kira Nerys (2026-03-31 13:00)</option>
-      <option value="3">3 - Nyota Uhura (2026-04-28 9:30)</option>
-      <option value="4">4 - Beckett Mariner (2025-12-10 10:00)</option>
-      <option value="5">5 - B'Elanna Torres (2026-08-09 15:00)</option>
+      {{#each appointments}}
+      <option value="{{this.appointmentID}}" required>{{this.appointmentID}} - {{this.apptDateTime}}</option>
+      {{/each}}
     </select>
 
     <label for="update_apptDateTime">Appointment Date/Time:</label>
-    <input type="datetime-local" id="update_apptDateTime" name="apptDateTime" />
+    <input type="datetime-local" id="update_apptDateTime" name="update_apptDateTime" required/>
 
     <label for="update_apptStatus">Appointment Status:</label>
-    <select id="update_apptStatus" name="apptStatus">
+    <select id="update_apptStatus" name="update_apptStatus" required>
       <option value="" disabled selected>Select status</option>
       <option value="Scheduled">Scheduled</option>
       <option value="Completed">Completed</option>
       <option value="Cancelled">Cancelled</option>
+      <option value="Voided">Voided -- use to delete</option>
     </select>
 
     <label for="update_typeID">Appointment Type:</label>
-    <select id="update_typeID" name="typeID">
+    <select id="update_typeID" name="update_typeID">
       <option value="" disabled selected>Select an appointment type</option>
-      <option value="NP">NP - New Patient</option>
-      <option value="OVR">OVR - Office Visit Regular</option>
-      <option value="PROC">PROC - Procedure</option>
-      <option value="NOB">NOB - New OB</option>
-      <option value="OBR">OBR - OB Regular</option>
+      {{#each appointment_types}}
+      <option value='{{this.typeID}}' required>{{this.typeID}}</option>
+      {{/each}}
+    </select>
+    
+    <label for="update_patientID">Patient:</label>
+    <select id="update_patientID" name="update_patientID">
+      <option value="" disabled selected>Select a patient</option>
+      {{#each patient_IDs}}
+      <option value="{{this.patientID}}" required>{{this.patientID}} - {{this.firstName}} {{this.lastName}}</option>
+      {{/each}}
     </select>
 
     <label for="update_providerID">Provider:</label>
-    <select id="update_providerID" name="providerID">
+    <select id="update_providerID" name="update_providerID">
       <option value="" disabled selected>Select a provider</option>
-      <option value="113">113 - Beverly Crusher</option>
-      <option value="249">249 - Christine Chapel</option>
-      <option value="368">368 - Julienne Bashir</option>
-      <option value="102">102 - Katherine Pulaski</option>
+      {{#each provider_IDs}}
+      <option value="{{this.providerID}}" required>{{this.providerID}} - {{this.title}} {{this.lastName}}</option>"
+      {{/each}}
     </select>
 
     <label for="update_clinicID">Clinic:</label>
-    <select id="update_clinicID" name="clinicID">
+    <select id="update_clinicID" name="update_clinicID">
       <option value="" disabled selected>Select a clinic</option>
-      <option value="1">1 - Corvallis</option>
-      <option value="2">2 - Salem</option>
-      <option value="3">3 - Eugene</option>
+      {{#each clinic_IDs}}
+      <option value="{{this.clinicID}}" required>{{this.clinicID}} - {{this.city}}</option>
+      {{/each}}
     </select>
 
     <input type="submit" value="Update Appointment" />
   </form>
 </div>
 
-<!-- DELETE -->
-<div class="card">
-  <h2>Delete an Appointment</h2>
-  {{!--
-  Step 3 note:
-  Delete form is UI-only in this draft. Backend delete logic is implemented
-  in later steps.
-  --}}
-  <form action="/appointments/delete" method="POST">
-    {{!-- Delete remains a simple selector + submit UI for this draft phase. --}}
-    <label for="delete_appointmentID">Appointment to Delete:</label>
-    <select id="delete_appointmentID" name="appointmentID" required>
-      <option value="" disabled selected>Select an appointment</option>
-      <option value="1">1 - Jadzia Dax (2026-07-15 14:30)</option>
-      <option value="2">2 - Kira Nerys (2026-03-31 13:00)</option>
-      <option value="3">3 - Nyota Uhura (2026-04-28 9:30)</option>
-      <option value="4">4 - Beckett Mariner (2025-12-10 10:00)</option>
-      <option value="5">5 - B'Elanna Torres (2026-08-09 15:00)</option>
-    </select>
-
-    <input type="submit" value="Delete Appointment" />
-  </form>
-</div>
