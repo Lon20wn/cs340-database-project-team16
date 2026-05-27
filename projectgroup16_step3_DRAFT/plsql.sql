@@ -12,6 +12,10 @@
 --Prompt used: "Update stored procedure to only delete appointment if appointment status is "Voided".
 ----------------------------------------------------------------------------------------
 
+-- #######################################################
+-- ############### Appointment-Types #####################
+-- #######################################################
+
 -- ###############################
 -- CREATE AppointmentType
 -- ###############################
@@ -31,7 +35,7 @@ BEGIN
 
 END//
 
-DELIMITER;
+DELIMITER ;
 
 -- #########################
 -- UPDATE AppointmentType
@@ -50,7 +54,7 @@ BEGIN
     WHERE typeID = p_typeID;
 END//
 
-DELIMITER;
+DELIMITER ;
 
 -- #########################
 -- DELETE AppointmentType
@@ -87,7 +91,11 @@ BEGIN
     
 END//
 
-DELIMITER;
+DELIMITER ;
+
+-- #######################################################
+-- ################## Appointments #######################
+-- #######################################################
 
 -- ###############################
 -- CREATE Appointment
@@ -117,7 +125,7 @@ BEGIN
 
 END//
 
-DELIMITER;
+DELIMITER ;
 
 -- #########################
 -- UPDATE Appointment
@@ -141,7 +149,7 @@ BEGIN
     WHERE appointmentID = p_appointmentID;
 END//
 
-DELIMITER;
+DELIMITER ;
 
 -- #########################
 -- DELETE Appointment
@@ -186,7 +194,11 @@ BEGIN
     COMMIT;
 END//
 
-DELIMITER;
+DELIMITER ;
+
+-- #######################################################
+-- ###################### Clinics ########################
+-- #######################################################
 
 -- #########################
 -- CREATE CLINIC
@@ -210,12 +222,12 @@ BEGIN
 
 END //
 
-DELIMITER;
+DELIMITER ;
 
 -- #########################
 -- UPDATE CLINIC
 -- #########################
-DROP PROCEDURE IF EXISTS sp_UpdateClinic
+DROP PROCEDURE IF EXISTS sp_UpdateClinic;
 
 DELIMITER //
 
@@ -229,7 +241,7 @@ BEGIN
     
 END //
 
-DELIMITER;
+DELIMITER ;
 
 -- #########################
 -- DELETE CLINIC
@@ -267,4 +279,97 @@ BEGIN
 
 END //
 
-DELIMITER;
+DELIMITER ;
+
+-- #######################################################
+-- ####################### PATIENTs ######################
+-- #######################################################
+
+-- ###############################
+-- CREATE PATIENT
+-- ###############################
+DROP PROCEDURE IF EXISTS sp_CreatePatient;
+
+DELIMITER //
+
+CREATE PROCEDURE sp_CreatePatient (
+    IN p_firstName VARCHAR(50),
+    IN p_lastName VARCHAR(50),
+    IN p_dateOfBirth DATE,
+    IN p_address VARCHAR(255),
+    IN p_language VARCHAR(50),
+    IN p_insurancePayor VARCHAR(50),
+    OUT p_patientID INT
+)
+BEGIN
+    INSERT INTO Patients (firstName, lastName, dateOfBirth, address, language, insurancePayor)
+    VALUES (p_firstName, p_lastName, p_dateOfBirth, p_address, p_language, p_insurancePayor);
+    
+    -- Store the ID of the last inserted row
+    SELECT LAST_INSERT_ID() into p_patientID;
+    -- Display the ID of the last inserted patient
+    SELECT LAST_INSERT_ID() AS 'new_id';
+
+END //
+
+DELIMITER ;
+
+-- #########################
+-- UPDATE PATIENT
+-- #########################
+DROP PROCEDURE IF EXISTS sp_UpdatePatient;
+
+DELIMITER //
+
+CREATE PROCEDURE sp_UpdatePatient (
+    IN p_patientID INT,
+    IN p_firstName VARCHAR(50),
+    IN p_lastName VARCHAR(50),
+    IN p_dateOfBirth DATE,
+    IN p_address VARCHAR(255),
+    IN p_language VARCHAR(50),
+    IN p_insurancePayor VARCHAR(50)
+)
+BEGIN
+    UPDATE Patients
+    SET firstName = p_firstName, lastName = p_lastName, dateOfBirth = p_dateOfBirth, address = p_address, language = p_language, insurancePayor = p_insurancePayor
+    WHERE patientID = p_patientID;
+END //
+
+DELIMITER ;
+
+-- #########################
+-- DELETE PATIENT
+-- #########################
+DROP PROCEDURE IF EXISTS sp_DeletePatient;
+
+DELIMITER //
+
+CREATE PROCEDURE sp_DeletePatient (IN p_patientID INT)
+BEGIN
+    DECLARE error_message VARCHAR(255);
+
+    -- error handling
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Roll back the transaction on any error
+        ROLLBACK;
+        -- Propogate the custom error message to the caller
+        RESIGNAL;
+    END;
+
+    START TRANSACTION;
+        -- Deleting will only work if patientID is not referenced in an appointment due to ON DELETE RESTRICT foreign key constraint.
+        DELETE FROM Patients WHERE patientID = p_patientID;
+
+        -- ROW_COUNT() returns the number of rows affected by the preceding statement.
+        IF ROW_COUNT() = 0 THEN
+            SET error_message = CONCAT('Patient cannot be deleted either because it is associated with an appointment or it does not exist.');
+            -- Trigger custom error, invoke EXIT HANDLER
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
+        END IF;
+    COMMIT;
+
+END //
+
+DELIMITER ;
