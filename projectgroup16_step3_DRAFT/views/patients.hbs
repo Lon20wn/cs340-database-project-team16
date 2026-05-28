@@ -7,11 +7,6 @@ Source URL: https://canvas.oregonstate.edu/
 --}}
 
 <h1>Patients</h1>
-{{!--
-Implementation summary:
-This page is a placeholder for planned CRUD support for Patients using schema-aligned
-sample values from the DDL and field naming consistent with the DML.
---}}
 
 <!-- READ -->
 <div class="card">
@@ -108,29 +103,26 @@ sample values from the DDL and field naming consistent with the DML.
   <h2> Add A New Patient</h2>
   <p> Add a new patient to the database by filling out the form below.</p>
   {{!-- Field names reflect the DML Add Patient query. --}}
-  <form action="/patients/add" method="POST">
-    <label for="create_patientID">Patient ID:</label>
-    <input type="number" id="create_patientID" name="patientID" min=1 required />
-
+  <form class="cuForm" action="/patients/create" method="POST">
     <label for="create_firstName">First Name:</label>
-    <input type="text" id="create_firstName" name="firstName" required />
+    <input type="text" id="create_firstName" name="create_firstName" required />
 
     <label for="create_lastName">Last Name:</label>
-    <input type="text" id="create_lastName" name="lastName" required />
+    <input type="text" id="create_lastName" name="create_lastName" required />
 
     <label for="create_dateOfBirth">Date of Birth:</label>
-    <input type="date" id="create_dateOfBirth" name="dateOfBirth" required />
+    <input type="date" id="create_dateOfBirth" name="create_dateOfBirth" required />
 
     <label for="create_address">Address:</label>
-    <input type="text" id="create_address" name="address" required />
+    <input type="text" id="create_address" name="create_address" required />
 
     <label for="create_language">Language:</label>
-    <input type="text" id="create_language" name="language" required />
+    <input type="text" id="create_language" name="create_language" required />
 
     <label for="create_insurancePayor">Insurance Payor:</label>
-    <input type="text" id="create_insurancePayor" name="insurancePayor" required />
+    <input type="text" id="create_insurancePayor" name="create_insurancePayor" required />
 
-    <input type="submit" value="Add" />
+    <input type="submit" value="Add Patient" />
   </form>
 </div>
 
@@ -138,35 +130,34 @@ sample values from the DDL and field naming consistent with the DML.
 <div class="card">
   <h2>Update an Existing Patient</h2>
   <p>Update any or all of an existing patient's information by filling out the form below.</p>
-  {{!-- Update form remains UI-only for Step 3 Draft. --}}
-  <form action="/patients/update" method="POST">
-    <label for="update_patientID_lookup">Patient to Update:</label>
-    <select id="update_patientID_lookup" name="patientIDLookup" required>
-      <option value="" disabled selected>Select a Patient</option>
-      <option value="1">1 - Nyota Uhura</option>
-      <option value="2">2 - Jadzia Dax</option>
-      <option value="3">3 - B'Elanna Torres</option>
-      <option value="4">4 - Kira Nerys</option>
-      <option value="5">5 - Beckett Mariner</option>
+  <form class="cuForm" action="/patients/update" method="POST">
+    <label for="update_patientID">Patient to Update:</label>
+    <select id="update_patientID" name="update_patientID" required>
+      <option value="">Select a Patient</option>
+      {{#each patients}}
+      <option value="{{this.patientID}}">
+        {{this.patientID}} - {{this.firstName}} {{this.lastName}}
+      </option>
+      {{/each}}
     </select>
 
     <label for="update_firstName">First Name:</label>
-    <input type="text" id="update_firstName" name="firstName" required />
+    <input type="text" id="update_firstName" name="update_firstName" />
 
     <label for="update_lastName">Last Name:</label>
-    <input type="text" id="update_lastName" name="lastName" required />
+    <input type="text" id="update_lastName" name="update_lastName" />
 
     <label for="update_dateOfBirth">Date of Birth:</label>
-    <input type="date" id="update_dateOfBirth" name="dateOfBirth" required />
+    <input type="date" id="update_dateOfBirth" name="update_dateOfBirth" />
 
     <label for="update_address">Address:</label>
-    <input type="text" id="update_address" name="address" required />
+    <input type="text" id="update_address" name="update_address" />
 
     <label for="update_language">Language:</label>
-    <input type="text" id="update_language" name="language" required />
+    <input type="text" id="update_language" name="update_language" />
 
     <label for="update_insurancePayor">Insurance Payor:</label>
-    <input type="text" id="update_insurancePayor" name="insurancePayor" required />
+    <input type="text" id="update_insurancePayor" name="update_insurancePayor" />
 
     <input type="submit" value="Update Patient" />
   </form>
@@ -177,15 +168,15 @@ sample values from the DDL and field naming consistent with the DML.
   <h2>Delete an Existing Patient</h2>
   <p>Permanetly remove a patient from the database by selecting them below.</p>
   {{!-- Delete remains a simple selector + submit UI for this draft phase. --}}
-  <form action="/patients/delete" method="POST">
+  <form class="cuForm" action="/patients/delete" method="POST">
     <label for="delete_patientID">Patient to Delete:</label>
-    <select id="delete_patientID" name="patientID" required>
-      <option value="" disabled selected>Select a Patient</option>
-      <option value="1">1 - Nyota Uhura</option>
-      <option value="2">2 - Jadzia Dax</option>
-      <option value="3">3 - B'Elanna Torres</option>
-      <option value="4">4 - Kira Nerys</option>
-      <option value="5">5 - Beckett Mariner</option>
+    <select id="delete_patientID" name="delete_patientID" required>
+      <option value="">Select a Patient</option>
+      {{#each patients}}
+      <option value="{{this.patientID}}">
+        {{this.patientID}} - {{this.firstName}} {{this.lastName}}
+      </option>
+      {{/each}}
     </select>
 
     <input type="submit" value="Delete Patient" />
