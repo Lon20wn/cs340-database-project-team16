@@ -99,7 +99,7 @@ app.get('/providers', async function (req, res) {
   try {
     // Query all provider fields needed for the browse table
     const query1 = `
-    SELECCT
+    SELECT
       providerID,
       firstName,
       lastName,
@@ -108,7 +108,7 @@ app.get('/providers', async function (req, res) {
     FROM Providers;
      `;
 
-    const [providers] = await bd.query(query1);
+    const [providers] = await db.query(query1);
 
     // Render template and pass DB results to Handlebars
     res.render('providers', { providers: providers });
@@ -245,6 +245,33 @@ app.post('/appointment-types/create', async function (req, res) {
   }
 });
 
+// CREATE provider
+// Purpose:
+// - Insert one new provider row via stored procedure
+// DB dependency:
+// - Requires stored procedure: sp_CreateProvider
+app.post('/providers/create', async function (req, res) {
+  try {
+    const data = req.body;
+
+    // Accept either prefixed or non-prefixed form names
+    const providerID = data.create_providerID ?? data.providerID;
+    const firstName = data.create_firstName ?? data.firstName;
+    const lastName = data.create_lastName ?? data.lastName;
+    const startDate = data.create_startDate ?? data.startDate;
+    const title = data.create_title ?? data.title;
+
+    const query1 = `CALL sp_CreateProvider(?, ?, ?, ?, ?);`;
+    await db.query(query1, [providerID, firstName, lastName, startDate, title]);
+
+    res.redirect('/providers');
+  }
+  catch (error) {
+    console.error('Error creating provider:', error);
+    res.status(500).send('An error occurred while creating the provider.');
+  }
+});
+
 app.post('/appointments/create', async function (req, res) {
   try {
     // Parse frontend form information
@@ -378,6 +405,33 @@ app.post('/appointment-types/update', async function (req, res) {
   }
 });
 
+// UPDATE provider
+// Purpose:
+// - Update an existing provider row via stored procedure
+// DB dependency:
+// - Requires stored procedure: sp_UpdateProvider
+app.post('/providers/update', async function (req, res) {
+  try {
+    const data = req.body;
+
+    // Accept either prefixed or non-prefixed form names
+    const providerID = data.update_providerID ?? data.providerIDLookup ?? data.providerID;
+    const firstName = data.update_firstName ?? data.firstName;
+    const lastName = data.update_lastName ?? data.lastName;
+    const startDate = data.update_startDate ?? data.startDate;
+    const title = data.update_title ?? data.title;
+
+    const query1 = `CALL sp_UpdateProvider(?, ?, ?, ?, ?);`;
+    await db.query(query1, [providerID, firstName, lastName, startDate, title]);
+
+    res.redirect('/providers');
+  }
+  catch (error) {
+    console.error('Error updating provider:', error);
+    res.status(500).send('An error occurred while updating the provider.');
+  }
+});
+
 app.post('/appointments/update', async function (req, res) {
   try {
     // Parse frontend form information
@@ -489,6 +543,29 @@ app.post('/appointment-types/delete', async function (req, res) {
     console.error('Error executing queries:', error);
     // Send a generic error message to the browser
     res.status(500).send('Unable to delete appointment type. It may be referenced in an appointment record.');
+  }
+});
+
+// DELETE provider
+// Purpose:
+// - Delete one provider row via stored procedure
+// DB dependency:
+// - Requires stored procedure: sp_DeleteProvider
+app.post('/providers/delete', async function (req, res) {
+  try {
+    const data = req.body;
+
+    // Accept either prefixed or non-prefixed form names
+    const providerID = data.delete_providerID ?? data.providerID;
+
+    const query1 = `CALL sp_DeleteProvider(?);`;
+    await db.query(query1, [providerID]);
+
+    res.redirect('/providers');
+  }
+  catch (error) {
+    console.error('Error deleting provider:', error);
+    res.status(500).send('An error occurred while deleting the provider.');
   }
 });
 
