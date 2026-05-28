@@ -85,12 +85,13 @@ sample values from the DDL and field naming consistent with the DML.
   {{!-- Update form remains UI-only for Step 3 Draft. --}}
   <form action="/providers/update" method="POST">
     <label for="update_providerID_lookup">Provider to Update:</label>
-    <select id="update_providerID_lookup" name="providerIDLookup" required>
-      <option value="" disabled selected>Select a provider</option>
-      <option value="102">102 - Katherine Pulaski</option>
-      <option value="113">113 - Beverly Crusher</option>
-      <option value="249">249 - Christine Chapel</option>
-      <option value="368">368 - Julienne Bashir</option>
+    <select id="update_providerID_lookup" name="update_providerID" required>
+      <option value="">Select a Provider</option>
+      {{#each providers}}
+      <option value="{{this.providerID}}">
+        {{this.providerID}} - {{this.firstName}} {{this.lastName}}
+      </option>
+      {{/each}}
     </select>
 
     <label for="update_firstName">First Name:</label>
@@ -120,12 +121,13 @@ sample values from the DDL and field naming consistent with the DML.
   {{!-- Delete remains a simple selector + submit UI for this draft phase. --}}
   <form action="/providers/delete" method="POST">
     <label for="delete_providerID">Provider to Delete:</label>
-    <select id="delete_providerID" name="providerID" required>
-      <option value="" disabled selected>Select a provider</option>
-      <option value="102">102 - Katherine Pulaski</option>
-      <option value="113">113 - Beverly Crusher</option>
-      <option value="249">249 - Christine Chapel</option>
-      <option value="368">368 - Julienne Bashir</option>
+    <select id="delete_providerID" name="delete_providerID" required>
+      <option value="">Select a Provider</option>
+      {{#each providers}}
+      <option value="{{this.providerID}}">
+        {{this.providerID}} - {{this.firstName}} {{this.lastName}}
+      </option>
+      {{/each}}
     </select>
 
     <input type="submit" value="Delete Provider" />
