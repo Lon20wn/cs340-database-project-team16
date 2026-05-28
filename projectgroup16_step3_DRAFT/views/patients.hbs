@@ -16,16 +16,15 @@ Source URL: https://canvas.oregonstate.edu/
   <div class="table-scroll">
     <table>
       <thead>
-        <tr>
-          <th>Patient ID</th>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>Date of Birth</th>
-          <th>Address</th>
-          <th>Language</th>
-          <th>Insurance Payor</th>
-        <th>Action</th>
-        </tr>
+        {{! For the table header row, we print the DB attribute names}}
+      <tr>
+        {{#each patients.[0]}}
+        <th>
+          {{@key}}
+        </th>
+        {{/each}}
+        <th></th>
+      </tr>
       </thead>
       <tbody>
         {{#each patients}}
@@ -120,7 +119,7 @@ Source URL: https://canvas.oregonstate.edu/
 <!-- DELETE -->
 <div class="card">
   <h2>Delete an Existing Patient</h2>
-  <p>Permanetly remove a patient from the database by selecting them below.</p>
+  <p>Permanently remove a patient from the database by selecting them below.</p>
   {{!-- Delete remains a simple selector + submit UI for this draft phase. --}}
   <form class="cuForm" action="/patients/delete" method="POST">
     <label for="delete_patientID">Patient to Delete:</label>
