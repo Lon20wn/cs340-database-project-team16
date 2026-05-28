@@ -347,6 +347,25 @@ app.post('/clinics/delete', async function (req, res) {
 });
 
 
+// RESET DATABASE
+app.post('/reset', async function (req, res) {
+  try {
+    const query1 = `CALL sp_Reset();`;
+    await db.query(query1)
+
+    console.log(`Database has been reset`)
+
+    // Redirect the user back to the home page
+    res.redirect('/');
+  }
+  catch (error) {
+    console.error('Error executing queries:', error)
+    res.status(500).send('Unable to reset database')
+  }
+
+})
+
+
 
 // Step 3 draft placeholder endpoint:
 // Used by UI buttons to show that edit/delete backend logic is intentionally
