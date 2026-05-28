@@ -517,6 +517,27 @@ app.get('/not-implemented', (req, res) => {
   res.status(501).send(`${feature} is not implemented yet in Step 3 Draft.`);
 });
 
+/*
+-------------------------------------------------------------
+----------------------- RESET -----------------------
+-------------------------------------------------------------
+*/
+app.post('/reset', async function (req, res) {
+  try {
+    const query1 = `CALL sp_Reset();`;
+    await db.query(query1);
+
+    console.log(`Database has been reset`);
+
+    // Redirect the user back to the home page
+    res.redirect('/');
+  }
+  catch (error) {
+    console.error('Error executing queries:', error);
+    res.status(500).send('Unable to reset database');
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on http://classwork.engr.oregonstate.edu:${PORT}`);
 });
