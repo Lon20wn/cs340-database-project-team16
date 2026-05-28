@@ -18,67 +18,29 @@ It follows the same Step 3 draft structure as the other entity pages.
 <div class="card">
   <h2>Browse Provider Locations</h2>
   <p>Displays which providers work at which clinic locations.</p>
-  {{!-- Static sample rows are acceptable for Step 3 Draft. --}}
   <div class="table-scroll">
     <table>
       <thead>
+        {{!-- For the table header row, we print the DB attribute names --}}
         <tr>
-          <th>Location ID</th>
-          <th>Provider ID</th>
-          <th>Provider Name</th>
-          <th>Clinic ID</th>
-          <th>Actions</th>
+          {{#each providerLocations.[0]}}
+          <th>
+            {{@key}}
+          </th>
+          {{/each}}
         </tr>
       </thead>
       <tbody>
+        {{#each providerLocations}}
         <tr>
-          <td>1</td>
-          <td>113</td>
-          <td>Beverly Crusher</td>
-          <td>1</td>
-          <td>
-            <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
-            <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
-          </td>
+          <td>{{this.locationID}}</td>
+          <td>{{this.providerID}}</td>
+          <td>{{this.clinicID}}</td>
+          <td>{{this.firstName}}</td>
+          <td>{{this.lastName}}</td>
+          <td>{{this.city}}</td>
         </tr>
-        <tr>
-          <td>2</td>
-          <td>113</td>
-          <td>Beverly Crusher</td>
-          <td>2</td>
-          <td>
-            <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
-            <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
-          </td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>249</td>
-          <td>Christine Chapel</td>
-          <td>1</td>
-          <td>
-            <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
-            <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
-          </td>
-        </tr>
-        <tr>
-          <td>4</td>
-          <td>368</td>
-          <td>Julienne Bashir</td>
-          <td>3</td>
-          <td>
-            <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
-            <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
-          </td>
-        </tr>
-        <tr>
-          <td>5</td>
-          <td>102</td>
-          <td>Katherine Pulaski</td>
-          <td>2</td>
-          <td>
-            <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
-            <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
+        {{/each}}
       </tbody>
     </table>
   </div>
@@ -87,23 +49,21 @@ It follows the same Step 3 draft structure as the other entity pages.
 <!-- CREATE -->
 <div class="card">
   <h2>Add a Provider Location</h2>
-  {{!-- Field names match the DML add query for the intersection table. --}}
-  <form action="/provider-locations/add" method="POST">
+  <form action="/provider-locations/create" method="POST">
     <label for="create_providerID">Provider:</label>
-    <select id="create_providerID" name="providerID" required>
+    <select id="create_providerID" name="create_providerID" required>
       <option value="" disabled selected>Select a provider</option>
-      <option value="113">113 - Beverly Crusher</option>
-      <option value="249">249 - Christine Chapel</option>
-      <option value="368">368 - Julienne Bashir</option>
-      <option value="102">102 - Katherine Pulaski</option>
+      {{#each providers}}
+      <option value="{{this.providerID}}">{{this.providerID}} - {{this.firstName}} {{this.lastName}}</option>
+      {{/each}}
     </select>
 
     <label for="create_clinicID">Clinic:</label>
-    <select id="create_clinicID" name="clinicID" required>
+    <select id="create_clinicID" name="create_clinicID" required>
       <option value="" disabled selected>Select a clinic</option>
-      <option value="1">1 - Corvallis</option>
-      <option value="2">2 - Salem</option>
-      <option value="3">3 - Eugene</option>
+      {{#each clinics}}
+      <option value="{{this.clinicID}}">{{this.clinicID}} - {{this.city}}</option>
+      {{/each}}
     </select>
 
     <input type="submit" value="Add Provider Location" />
@@ -113,22 +73,21 @@ It follows the same Step 3 draft structure as the other entity pages.
 <!-- UPDATE -->
 <div class="card">
   <h2>Update a Provider Location</h2>
-  {{!-- Update form remains UI-only for this Step 3 draft. --}}
   <form action="/provider-locations/update" method="POST">
     <label for="update_locationID">Provider Location to Update:</label>
-    <select id="update_locationID" name="locationID" required>
+    <select id="update_locationID" name="update_locationID" required>
       <option value="" disabled selected>Select a provider location</option>
-      <option value="1">1 - Beverly Crusher @ Corvallis</option>
-      <option value="2">2 - Beverly Crusher @ Salem</option>
-      <option value="3">3 - Christine Chapel @ Corvallis</option>
+      {{#each providerLocations}}
+      <option value="{{this.locationID}}">{{this.locationID}} - {{this.firstName}} {{this.lastName}} @ {{this.city}}</option>
+      {{/each}}
     </select>
 
     <label for="update_clinicID">New Clinic:</label>
-    <select id="update_clinicID" name="clinicID" required>
+    <select id="update_clinicID" name="update_clinicID" required>
       <option value="" disabled selected>Select a clinic</option>
-      <option value="1">1 - Corvallis</option>
-      <option value="2">2 - Salem</option>
-      <option value="3">3 - Eugene</option>
+      {{#each clinics}}
+      <option value="{{this.clinicID}}">{{this.clinicID}} - {{this.city}}</option>
+      {{/each}}
     </select>
 
     <input type="submit" value="Update Provider Location" />
@@ -138,16 +97,13 @@ It follows the same Step 3 draft structure as the other entity pages.
 <!-- DELETE -->
 <div class="card">
   <h2>Delete a Provider Location</h2>
-  {{!-- Delete remains a simple selector + submit UI for this draft phase. --}}
   <form action="/provider-locations/delete" method="POST">
     <label for="delete_locationID">Provider Location to Delete:</label>
-    <select id="delete_locationID" name="locationID" required>
+    <select id="delete_locationID" name="delete_locationID" required>
       <option value="" disabled selected>Select a provider location</option>
-      <option value="1">1 - Beverly Crusher @ Corvallis</option>
-      <option value="2">2 - Beverly Crusher @ Salem</option>
-      <option value="3">3 - Christine Chapel @ Corvallis</option>
-      <option value="4">4 - Julienne Bashir @ Eugene</option>
-      <option value="5">5 - Katherine Pulaski @ Salem</option>
+      {{#each providerLocations}}
+      <option value="{{this.locationID}}">{{this.locationID}} - {{this.firstName}} {{this.lastName}} @ {{this.city}}</option>
+      {{/each}}
     </select>
 
     <input type="submit" value="Delete Provider Location" />
