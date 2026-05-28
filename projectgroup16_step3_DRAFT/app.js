@@ -190,10 +190,22 @@ app.get('/provider-locations', async function (req, res) {
       JOIN Clinics c ON pl.clinicID = c.clinicID;
     `;
 
+   // Fetch providers for CREATE dropdown
+    const query2 = `SELECT providerID, firstName, lastName FROM Providers ORDER BY lastName, firstName;`;
+
+    // Fetch clinics for CREATE/UPDATE dropdown
+    const query3 = `SELECT clinicID, city FROM Clinics ORDER BY clinicID;`;
+
     const [providerLocations] = await db.query(query1);
+    const [providers]         = await db.query(query2);
+    const [clinics]           = await db.query(query3);
 
     // Render template and pass DB results to Handlebars
-    res.render('provider-locations', { providerLocations: providerLocations });
+    res.render('provider-locations', {
+      providerLocations: providerLocations,
+      providers: providers,
+      clinics: clinics
+    });
   }
   catch (error) {
     // Server-side logging for debugging
