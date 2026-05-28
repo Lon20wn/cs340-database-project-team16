@@ -167,8 +167,41 @@ app.get('/appointments', async function (req, res) {
   }
 });
 
-app.get('/provider-locations', (req, res) => {
-  res.render('provider-locations');
+// READ provider-locations
+// Purpose:
+// - Fetch all provider-location mappings with provider and clinic details
+// - Render the provider-locations.hbs page with live DB data
+// Notes:
+// - The view receives an array named `providerLocations`
+// - Includes provider name, clinic city, and location ID for edit/delete
+app.get('/provider-locations', async function (req, res) {
+  try {
+    // Query provider locations with provider and clinic details for display
+    const query1 = `
+      SELECT
+        pl.locationID,
+        pl.providerID,
+        pl.clinicID,
+        p.firstName,
+        p.lastName,
+        c.city
+      FROM ProviderLocations pl
+      JOIN Providers p ON pl.providerID = p.providerID
+      JOIN Clinics c ON pl.clinicID = c.clinicID;
+    `;
+
+    const [providerLocations] = await db.query(query1);
+
+    // Render template and pass DB results to Handlebars
+    res.render('provider-locations', { providerLocations: providerLocations });
+  }
+  catch (error) {
+    // Server-side logging for debugging
+    console.error('Error executing queries:', error);
+
+    // Client-facing generic error message
+    res.status(500).send('An error occurred while executing the database queries.');
+  }
 });
 
 /*
