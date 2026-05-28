@@ -376,6 +376,29 @@ app.post('/clinics/create', async function (req, res) {
   }
 });
 
+// CREATE provider-location
+// Purpose:
+// - Insert one new row into ProviderLocations (intersection table)
+// DB dependency:
+// - Requires stored procedure: sp_CreateProviderLocation
+app.post('/provider-locations/create', async function (req, res) {
+  try {
+    const data = req.body;
+    const query1 = `CALL sp_CreateProviderLocation(?, ?);`;
+    await db.query(query1, [
+      data.create_providerID,
+      data.create_clinicID
+    ]);
+
+    console.log(`CREATE provider-location. providerID: ${data.create_providerID} clinicID: ${data.create_clinicID}`);
+    res.redirect('/provider-locations');
+  }
+  catch (error) {
+    console.error('Error creating provider-location:', error);
+    res.status(500).send('An error occurred while creating the provider location.');
+  }
+});
+
 /*
 -------------------------------------------------------------
 ----------------------- UPDATE ROUTES -----------------------
@@ -534,6 +557,29 @@ app.post('/clinics/update', async function (req, res) {
   }
 });
 
+// UPDATE provider-location
+// Purpose:
+// - Update clinicID for an existing ProviderLocations row
+// DB dependency:
+// - Requires stored procedure: sp_UpdateProviderLocation
+app.post('/provider-locations/update', async function (req, res) {
+  try {
+    const data = req.body;
+    const query1 = `CALL sp_UpdateProviderLocation(?, ?);`;
+    await db.query(query1, [
+      data.update_locationID,
+      data.update_clinicID
+    ]);
+
+    console.log(`UPDATE provider-location. locationID: ${data.update_locationID} new clinicID: ${data.update_clinicID}`);
+    res.redirect('/provider-locations');
+  }
+  catch (error) {
+    console.error('Error updating provider-location:', error);
+    res.status(500).send('An error occurred while updating the provider location.');
+  }
+});
+
 /*
 -------------------------------------------------------------
 ----------------------- DELETE ROUTES -----------------------
@@ -659,7 +705,25 @@ app.post('/clinics/delete', async function (req, res) {
   }
 });
 
+// DELETE provider-location
+// Purpose:
+// - Delete one ProviderLocations row by locationID
+// DB dependency:
+// - Requires stored procedure: sp_DeleteProviderLocation
+app.post('/provider-locations/delete', async function (req, res) {
+  try {
+    const data = req.body;
+    const query1 = `CALL sp_DeleteProviderLocation(?);`;
+    await db.query(query1, [data.delete_locationID]);
 
+    console.log(`DELETE provider-location. locationID: ${data.delete_locationID}`);
+    res.redirect('/provider-locations');
+  }
+  catch (error) {
+    console.error('Error deleting provider-location:', error);
+    res.status(500).send('An error occurred while deleting the provider location.');
+  }
+});
 
 // Step 3 draft placeholder endpoint:
 // Used by UI buttons to show that edit/delete backend logic is intentionally
