@@ -88,8 +88,38 @@ app.get('/appointment-types', async function (req, res) {
   }
 });
 
-app.get('/providers', (req, res) => {
-  res.render('providers');
+// READ providers
+// Purpose:
+// - Fetch all provider rows from the Providers table
+// - Render the providers.hbs page with live DB data
+// Notes:
+// - The view will receive an array named `providers`
+// - Each object in the array has keys matching selected column names
+app.get('/providers', async function (req, res) {
+  try {
+    // Query all provider fields needed for the browse table
+    const query1 = `
+    SELECCT
+      providerID,
+      firstName,
+      lastName,
+      startDate,
+      title
+    FROM Providers;
+     `;
+
+    const [providers] = await bd.query(query1);
+
+    // Render template and pass DB results to Handlebars
+    res.render('providers', { providers: providers });
+  }
+  catch (error) {
+    // Server-side logging for debugging
+    console.error('Error executing queries:', error);
+
+    // Client-facing generic error message.
+    res.status(500).send('An error occurred while executing the database queries.');
+  }
 });
 
 app.get('/clinics', async function (req, res) {
