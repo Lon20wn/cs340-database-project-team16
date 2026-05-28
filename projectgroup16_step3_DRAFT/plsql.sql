@@ -190,10 +190,102 @@ END//
 
 DELIMITER ;
 
+-- ##########################################################################
+-- ################################ PATIENTs ################################
+-- ##########################################################################
 
--- #######################################################
--- ############### Appointment-Types #####################
--- #######################################################
+-- ###############################
+-- CREATE PATIENT
+-- ###############################
+DROP PROCEDURE IF EXISTS sp_CreatePatient;
+
+DELIMITER //
+
+CREATE PROCEDURE sp_CreatePatient (
+    IN p_firstName VARCHAR(50),
+    IN p_lastName VARCHAR(50),
+    IN p_dateOfBirth DATE,
+    IN p_address VARCHAR(255),
+    IN p_language VARCHAR(50),
+    IN p_insurancePayor VARCHAR(50),
+    OUT p_patientID INT
+)
+BEGIN
+    INSERT INTO Patients (firstName, lastName, dateOfBirth, address, language, insurancePayor)
+    VALUES (p_firstName, p_lastName, p_dateOfBirth, p_address, p_language, p_insurancePayor);
+    
+    -- Store the ID of the last inserted row
+    SELECT LAST_INSERT_ID() into p_patientID;
+    -- Display the ID of the last inserted patient
+    SELECT LAST_INSERT_ID() AS 'new_id';
+
+END //
+
+DELIMITER ;
+
+-- #########################
+-- UPDATE PATIENT
+-- #########################
+DROP PROCEDURE IF EXISTS sp_UpdatePatient;
+
+DELIMITER //
+
+CREATE PROCEDURE sp_UpdatePatient (
+    IN p_patientID INT,
+    IN p_firstName VARCHAR(50),
+    IN p_lastName VARCHAR(50),
+    IN p_dateOfBirth DATE,
+    IN p_address VARCHAR(255),
+    IN p_language VARCHAR(50),
+    IN p_insurancePayor VARCHAR(50)
+)
+BEGIN
+    UPDATE Patients
+    SET firstName = p_firstName, lastName = p_lastName, dateOfBirth = p_dateOfBirth, address = p_address, language = p_language, insurancePayor = p_insurancePayor
+    WHERE patientID = p_patientID;
+END //
+
+DELIMITER ;
+
+-- #########################
+-- DELETE PATIENT
+-- #########################
+DROP PROCEDURE IF EXISTS sp_DeletePatient;
+
+DELIMITER //
+
+CREATE PROCEDURE sp_DeletePatient (IN p_patientID INT)
+BEGIN
+    DECLARE error_message VARCHAR(255);
+
+    -- error handling
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Roll back the transaction on any error
+        ROLLBACK;
+        -- Propogate the custom error message to the caller
+        RESIGNAL;
+    END;
+
+    START TRANSACTION;
+        -- Deleting will only work if patientID is not referenced in an appointment due to ON DELETE RESTRICT foreign key constraint.
+        DELETE FROM Patients WHERE patientID = p_patientID;
+
+        -- ROW_COUNT() returns the number of rows affected by the preceding statement.
+        IF ROW_COUNT() = 0 THEN
+            SET error_message = CONCAT('Patient cannot be deleted either because it is associated with an appointment or it does not exist.');
+            -- Trigger custom error, invoke EXIT HANDLER
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
+        END IF;
+    COMMIT;
+
+END //
+
+DELIMITER ;
+
+-- ##########################################################################
+-- ######################## Appointment-Types ###############################
+-- ##########################################################################
 
 -- ###############################
 -- CREATE AppointmentType
@@ -272,9 +364,181 @@ END//
 
 DELIMITER ;
 
--- #######################################################
--- ################## Appointments #######################
--- #######################################################
+-- ##########################################################################
+-- ################################# PROVIDERS ##############################
+-- ##########################################################################
+
+-- ###############################
+-- CREATE PROVIDER
+-- ###############################
+DROP PROCEDURE IF EXISTS sp_CreateProvider;
+
+DELIMITER //
+
+CREATE PROCEDURE sp_CreateProvider (
+    IN p_providerID INT,
+    IN p_firstName VARCHAR(50),
+    IN p_lastName VARCHAR(50),
+    IN p_startDate DATE,
+    IN p_title VARCHAR(50)
+)
+BEGIN
+    INSERT INTO Providers (providerID, firstName, lastName, startDate, title)
+    VALUES (p_providerID, p_firstName, p_lastName, p_startDate, p_title);
+    
+    -- Display the ID of the inserted provider
+    SELECT p_providerID AS 'new_id';
+
+END //
+
+DELIMITER ;
+
+-- #########################
+-- UPDATE PROVIDER
+-- #########################
+DROP PROCEDURE IF EXISTS sp_UpdateProvider;
+
+DELIMITER //
+
+CREATE PROCEDURE sp_UpdateProvider (
+    IN p_providerID INT,
+    IN p_firstName VARCHAR(50),
+    IN p_lastName VARCHAR(50),
+    IN p_startDate DATE,
+    IN p_title VARCHAR(50)
+)
+BEGIN
+    UPDATE Providers
+    SET firstName = p_firstName, lastName = p_lastName, startDate = p_startDate, title = p_title
+    WHERE providerID = p_providerID;
+END //
+
+DELIMITER ;
+
+-- #########################
+-- DELETE PROVIDER
+-- #########################
+DROP PROCEDURE IF EXISTS sp_DeleteProvider;
+
+DELIMITER //
+
+CREATE PROCEDURE sp_DeleteProvider (IN p_providerID INT)
+BEGIN
+    DECLARE error_message VARCHAR(255);
+
+    -- error handling
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Roll back the transaction on any error
+        ROLLBACK;
+        -- Propagate the custom error message to the caller
+        RESIGNAL;
+    END;
+
+    START TRANSACTION;
+        -- Deleting will only work if providerID is not referenced in appointments or provider locations due to ON DELETE RESTRICT foreign key constraint.
+        DELETE FROM Providers WHERE providerID = p_providerID;
+
+        -- ROW_COUNT() returns the number of rows affected by the preceding statement.
+        IF ROW_COUNT() = 0 THEN
+            SET error_message = CONCAT('Provider cannot be deleted either because it is associated with an appointment or provider location or it does not exist.');
+            -- Trigger custom error, invoke EXIT HANDLER
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
+        END IF;
+    COMMIT;
+
+END //
+
+DELIMITER ;
+
+-- ##########################################################################
+-- ################################# Clinics ################################
+-- ##########################################################################
+
+-- #########################
+-- CREATE CLINIC
+-- #########################
+DROP PROCEDURE IF EXISTS sp_CreateClinic;
+
+DELIMITER //
+
+CREATE PROCEDURE sp_CreateClinic(
+    IN p_city VARCHAR(50),
+    OUT p_clinicID INT
+)
+BEGIN
+    INSERT INTO Clinics (city)
+    VALUES (p_city);
+
+    -- Store the ID of the last inserted row
+    SELECT LAST_INSERT_ID() into p_clinicID;
+    -- Display the ID of the last inserted clinic
+    SELECT LAST_INSERT_ID() as 'new_id';
+
+END //
+
+DELIMITER ;
+
+-- #########################
+-- UPDATE CLINIC
+-- #########################
+DROP PROCEDURE IF EXISTS sp_UpdateClinic;
+
+DELIMITER //
+
+CREATE PROCEDURE sp_UpdateClinic (
+    IN p_clinicID INT,
+    IN p_city VARCHAR(50)
+)
+
+BEGIN
+    UPDATE Clinics SET city = p_city WHERE clinicID = p_clinicID;
+    
+END //
+
+DELIMITER ;
+
+-- #########################
+-- DELETE CLINIC
+-- #########################
+DROP PROCEDURE IF EXISTS sp_DeleteClinic;
+
+DELIMITER //
+
+CREATE PROCEDURE sp_DeleteClinic  (
+    IN p_clinicID INT
+)
+BEGIN
+    DECLARE error_message VARCHAR(255);
+
+    -- error handling
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Roll back the transaction on any error
+        ROLLBACK;
+        -- Propogate the custome error message to the caller
+        RESIGNAL;
+    END;
+
+    START TRANSACTION;
+        -- Deleting will only work if clinicID is not referenced in an appointment due to ON DELETE RESTRICT foreign key constraint. 
+        DELETE FROM Clinics WHERE clinicID = p_clinicID;
+
+        -- ROW_COUNT() returns the number of rows affected by the preceding statement.
+        IF ROW_COUNT() = 0 THEN
+            SET error_message = CONCAT('Clinic cannot be deleted either because it is associated with an appointment or it does not exist.');
+            -- Trigger custome error, invoke EXIT HANDLER
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
+        END IF;
+    COMMIT;
+
+END //
+
+DELIMITER ;
+
+-- ##########################################################################
+-- ############################ Appointments ################################
+-- ##########################################################################
 
 -- ###############################
 -- CREATE Appointment
@@ -375,180 +639,5 @@ END//
 
 DELIMITER ;
 
--- #######################################################
--- ###################### Clinics ########################
--- #######################################################
 
--- #########################
--- CREATE CLINIC
--- #########################
-DROP PROCEDURE IF EXISTS sp_CreateClinic;
 
-DELIMITER //
-
-CREATE PROCEDURE sp_CreateClinic(
-    IN p_city VARCHAR(50),
-    OUT p_clinicID INT
-)
-BEGIN
-    INSERT INTO Clinics (city)
-    VALUES (p_city);
-
-    -- Store the ID of the last inserted row
-    SELECT LAST_INSERT_ID() into p_clinicID;
-    -- Display the ID of the last inserted clinic
-    SELECT LAST_INSERT_ID() as 'new_id';
-
-END //
-
-DELIMITER ;
-
--- #########################
--- UPDATE CLINIC
--- #########################
-DROP PROCEDURE IF EXISTS sp_UpdateClinic;
-
-DELIMITER //
-
-CREATE PROCEDURE sp_UpdateClinic (
-    IN p_clinicID INT,
-    IN p_city VARCHAR(50)
-)
-
-BEGIN
-    UPDATE Clinics SET city = p_city WHERE clinicID = p_clinicID;
-    
-END //
-
-DELIMITER ;
-
--- #########################
--- DELETE CLINIC
--- #########################
-DROP PROCEDURE IF EXISTS sp_DeleteClinic;
-
-DELIMITER //
-
-CREATE PROCEDURE sp_DeleteClinic  (
-    IN p_clinicID INT
-)
-BEGIN
-    DECLARE error_message VARCHAR(255);
-
-    -- error handling
-    DECLARE EXIT HANDLER FOR SQLEXCEPTION
-    BEGIN
-        -- Roll back the transaction on any error
-        ROLLBACK;
-        -- Propogate the custome error message to the caller
-        RESIGNAL;
-    END;
-
-    START TRANSACTION;
-        -- Deleting will only work if clinicID is not referenced in an appointment due to ON DELETE RESTRICT foreign key constraint. 
-        DELETE FROM Clinics WHERE clinicID = p_clinicID;
-
-        -- ROW_COUNT() returns the number of rows affected by the preceding statement.
-        IF ROW_COUNT() = 0 THEN
-            SET error_message = CONCAT('Clinic cannot be deleted either because it is associated with an appointment or it does not exist.');
-            -- Trigger custome error, invoke EXIT HANDLER
-            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
-        END IF;
-    COMMIT;
-
-END //
-
-DELIMITER ;
-
--- #######################################################
--- ####################### PATIENTs ######################
--- #######################################################
-
--- ###############################
--- CREATE PATIENT
--- ###############################
-DROP PROCEDURE IF EXISTS sp_CreatePatient;
-
-DELIMITER //
-
-CREATE PROCEDURE sp_CreatePatient (
-    IN p_firstName VARCHAR(50),
-    IN p_lastName VARCHAR(50),
-    IN p_dateOfBirth DATE,
-    IN p_address VARCHAR(255),
-    IN p_language VARCHAR(50),
-    IN p_insurancePayor VARCHAR(50),
-    OUT p_patientID INT
-)
-BEGIN
-    INSERT INTO Patients (firstName, lastName, dateOfBirth, address, language, insurancePayor)
-    VALUES (p_firstName, p_lastName, p_dateOfBirth, p_address, p_language, p_insurancePayor);
-    
-    -- Store the ID of the last inserted row
-    SELECT LAST_INSERT_ID() into p_patientID;
-    -- Display the ID of the last inserted patient
-    SELECT LAST_INSERT_ID() AS 'new_id';
-
-END //
-
-DELIMITER ;
-
--- #########################
--- UPDATE PATIENT
--- #########################
-DROP PROCEDURE IF EXISTS sp_UpdatePatient;
-
-DELIMITER //
-
-CREATE PROCEDURE sp_UpdatePatient (
-    IN p_patientID INT,
-    IN p_firstName VARCHAR(50),
-    IN p_lastName VARCHAR(50),
-    IN p_dateOfBirth DATE,
-    IN p_address VARCHAR(255),
-    IN p_language VARCHAR(50),
-    IN p_insurancePayor VARCHAR(50)
-)
-BEGIN
-    UPDATE Patients
-    SET firstName = p_firstName, lastName = p_lastName, dateOfBirth = p_dateOfBirth, address = p_address, language = p_language, insurancePayor = p_insurancePayor
-    WHERE patientID = p_patientID;
-END //
-
-DELIMITER ;
-
--- #########################
--- DELETE PATIENT
--- #########################
-DROP PROCEDURE IF EXISTS sp_DeletePatient;
-
-DELIMITER //
-
-CREATE PROCEDURE sp_DeletePatient (IN p_patientID INT)
-BEGIN
-    DECLARE error_message VARCHAR(255);
-
-    -- error handling
-    DECLARE EXIT HANDLER FOR SQLEXCEPTION
-    BEGIN
-        -- Roll back the transaction on any error
-        ROLLBACK;
-        -- Propogate the custom error message to the caller
-        RESIGNAL;
-    END;
-
-    START TRANSACTION;
-        -- Deleting will only work if patientID is not referenced in an appointment due to ON DELETE RESTRICT foreign key constraint.
-        DELETE FROM Patients WHERE patientID = p_patientID;
-
-        -- ROW_COUNT() returns the number of rows affected by the preceding statement.
-        IF ROW_COUNT() = 0 THEN
-            SET error_message = CONCAT('Patient cannot be deleted either because it is associated with an appointment or it does not exist.');
-            -- Trigger custom error, invoke EXIT HANDLER
-            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
-        END IF;
-    COMMIT;
-
-END //
-
-DELIMITER ;
