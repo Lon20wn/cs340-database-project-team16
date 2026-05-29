@@ -639,5 +639,84 @@ END//
 
 DELIMITER ;
 
+-- ##########################################################################
+-- ########################## ProviderLocations #############################
+-- ##########################################################################
 
+-- #########################
+-- CREATE PROVIDER LOCATIONS
+-- #########################
+DROP PROCEDURE IF EXISTS sp_CreateProviderLocation;
+
+DELIMITER //
+
+CREATE PROCEDURE sp_CreateProviderLocation (
+    IN p_providerID INT,
+    IN p_clinicID INT
+)
+BEGIN
+    -- Insert a new provider-to-clinic mapping row into the intersection table.
+    INSERT INTO ProviderLocations (providerID, clinicID)
+    VALUES (p_providerID, p_clinicID);
+
+    -- Display the ID of the inserted provider location.
+    SELECT LAST_INSERT_ID() AS 'new_id';
+END //
+
+DELIMITER ;
+
+-- #########################
+-- UPDATE PROVIDER LOCATIONS
+-- #########################
+DROP PROCEDURE IF EXISTS sp_UpdateProviderLocation;
+
+DELIMITER //
+
+CREATE PROCEDURE sp_UpdateProviderLocation (
+    IN p_locationID INT,
+    IN p_clinicID INT
+)
+BEGIN
+    -- Update the clinic assignment for a specific provider-location row.
+    UPDATE ProviderLocations
+    SET clinicID = p_clinicID
+    WHERE locationID = p_locationID;
+END //
+
+DELIMITER ;
+
+-- #########################
+-- DELETE PROVIDER LOCATIONS
+-- #########################
+DROP PROCEDURE IF EXISTS sp_DeleteProviderLocation;
+
+DELIMITER //
+
+CREATE PROCEDURE sp_DeleteProviderLocation (IN p_locationID INT)
+BEGIN
+    DECLARE error_message VARCHAR(255);
+
+    -- error handling
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Roll back the transaction on any error
+        ROLLBACK;
+        -- Propagate the custom error message to the caller
+        RESIGNAL;
+    END;
+
+    START TRANSACTION;
+        -- Delete the targeted provider-location row.
+        DELETE FROM ProviderLocations WHERE locationID = p_locationID;
+
+        -- If no rows were deleted, it means the locationID does not exist.
+        IF ROW_COUNT() = 0 THEN
+            SET error_message = CONCAT('Provider location does not exist with locationID: ', p_locationID);
+            -- Trigger custom error, invoke EXIT HANDLER
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
+        END IF;
+    COMMIT;
+END //
+
+DELIMITER ;
 
