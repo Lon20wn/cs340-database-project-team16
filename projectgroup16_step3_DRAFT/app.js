@@ -70,6 +70,13 @@ app.get('/patients', async function (req, res) {
   }
 });
 
+// READ appointment-types
+// Purpose:
+// - Fetch all appointment type rows from the AppointmentTypes table
+// - Render the appointment-types.hbs page with live DB data
+// Notes:
+// - The view will receive an array named `appointment_types`
+// - Each object in the array has keys matching selected column names
 app.get('/appointment-types', async function (req, res) {
   try {
     // Create and execute our queries
@@ -122,6 +129,13 @@ app.get('/providers', async function (req, res) {
   }
 });
 
+// READ clinics
+// Purpose:
+// - Fetch all clinic rows from the Clinics table
+// - Render the clinics.hbs page with live DB data
+// Notes:
+// - The view will receive an array named `clinic`
+// - Each object in the array has keys matching selected column names
 app.get('/clinics', async function (req, res) {
   try {
     // Create and execute our queries
@@ -139,6 +153,13 @@ app.get('/clinics', async function (req, res) {
   }
 });
 
+// READ appointments
+// Purpose:
+// - Fetch all appointment rows from the Appointments table
+// - Render the appointments.hbs page with live DB data
+// Notes:
+// - The view will receive an array named `appointments`
+// - Each object in the array has keys matching selected column names
 app.get('/appointments', async function (req, res) {
   try {
     // Create and execute our queries
@@ -263,6 +284,13 @@ app.post('/patients/create', async function (req, res) {
   }
 });
 
+// CREATE appointment-type
+// Purpose:
+// - Insert one new appointment type row via stored procedure
+// Form dependency:
+// - Expects request body fields: create_typeID, create_description, create_durationInMinutes
+// DB dependency:
+// - Requires stored procedure: sp_CreateAppointmentType(IN..., OUT p_typeID)
 app.post('/appointment-types/create', async function (req, res) {
   try {
     // Parse frontend form information
@@ -317,6 +345,47 @@ app.post('/providers/create', async function (req, res) {
   }
 });
 
+//Create clinic
+// Purpose:
+// - Insert one new clinic row via stored procedure
+// Form dependency:
+// - Expects request body field: create_city
+// DB dependency:
+// - Requires stored procedure: sp_CreateClinic(IN p_city, OUT p_clinicID)
+app.post('/clinics/create', async function (req, res) {
+  try {
+    //Parse frontend form information
+    let data = req.body;
+
+    // Create and execute our queries
+    // Using parameterized queries (Prevents SQL injection attacks)
+    const query1 = `CALL sp_CreateClinic(?, @new_id);`;
+
+    // Store ID of last inserted row
+    const [[[rows]]] = await db.query(query1, [
+      data.create_city
+    ]);
+
+    console.log(`CREATE Clinic. ID: ${rows.new_id} ` + `City: ${data.create_city}`);
+
+    // Redirect the user to the updated webpage
+    res.redirect('/clinics');
+  }
+  catch (error) {
+    console.error('Error executing queries:', error);
+    res.status(500).send('An error occurred while executing the database queries.');
+  }
+});
+
+// CREATE appointments
+// Purpose:
+// - Insert one new appointment row via stored procedure
+// Form dependency:
+// - Expects request body fields:
+//   create_apptDateTime, create_apptStatus, create_typeID,
+//   create_patientID, create_providerID, create_clinicID
+// DB dependency:
+// - Requires stored procedure: sp_CreateAppointment(IN..., OUT p_appointmentID)
 app.post('/appointments/create', async function (req, res) {
   try {
     // Parse frontend form information
@@ -347,32 +416,6 @@ app.post('/appointments/create', async function (req, res) {
     console.error('Error executing querires:', error);
     // Send a generic error message to the browser
     res.status(500).send('An error occurred while excuting the database queries.');
-  }
-});
-
-
-app.post('/clinics/create', async function (req, res) {
-  try {
-    //Parse frontend form information
-    let data = req.body;
-
-    // Create and execute our queries
-    // Using parameterized queries (Prevents SQL injection attacks)
-    const query1 = `CALL sp_CreateClinic(?, @new_id);`;
-
-    // Store ID of last inserted row
-    const [[[rows]]] = await db.query(query1, [
-      data.create_city
-    ]);
-
-    console.log(`CREATE Clinic. ID: ${rows.new_id} ` + `City: ${data.create_city}`);
-
-    // Redirect the user to the updated webpage
-    res.redirect('/clinics');
-  }
-  catch (error) {
-    console.error('Error executing queries:', error);
-    res.status(500).send('An error occurred while executing the database queries.');
   }
 });
 
@@ -445,6 +488,13 @@ app.post('/patients/update', async function (req, res) {
   }
 });
 
+// UPDATE appointment-type
+// Purpose:
+// - Update an existing appointment type row by typeID using stored procedure
+// Form dependency:
+// - Expects request body fields: update_typeID, update_description, update_durationInMinutes
+// DB dependency:
+// - Requires stored procedure: sp_UpdateAppointmentType(IN..., OUT p_typeID)
 app.post('/appointment-types/update', async function (req, res) {
   try {
     // Parse frontend form information
@@ -473,7 +523,7 @@ app.post('/appointment-types/update', async function (req, res) {
   }
 });
 
-// UPDATE provider
+// UPDATE providers
 // Purpose:
 // - Update an existing provider row via stored procedure
 // DB dependency:
@@ -500,6 +550,47 @@ app.post('/providers/update', async function (req, res) {
   }
 });
 
+// UPDATE clinics
+// Purpose:
+// - Update an existing clinic row by clinicID using stored procedure
+// Form dependency:
+// - Expects request body fields: update_clinicID, update_city
+// DB dependency:
+// - Requires stored procedure: sp_UpdateClinic(IN..., OUT p_clinicID)
+app.post('/clinics/update', async function (req, res) {
+  try {
+    // Parse frontend form information
+    const data = req.body;
+
+    // Create and execute our query
+    // Using parameterized queries (Prevents SQL injection attacks)
+    const query1 = `CALL sp_UpdateClinic(?, ?);`;
+    await db.query(query1, [
+      data.update_clinicID,
+      data.update_city,
+    ]);
+
+    console.log(`UPDATE clinics. ID ${data.update_clinicID} ` + `City: ${data.update_city}`);
+
+    // Redirect the user to the updated webpage data
+    res.redirect('/clinics');
+  }
+  catch (error) {
+    console.error('Error executing queries:', error);
+    // Send a generic error message to the browser
+    res.status(500).send('An error occurred while executing the database queries.');
+  }
+});
+
+// UPDATE appointments
+// Purpose:
+// - Update an existing appointment row by appointmentID using stored procedure
+// Form dependency:
+// - Expects request body fields:
+//   update_appointmentID, update_apptDateTime, update_apptStatus,
+//   update_typeID, update_patientID, update_providerID, update_clinicID
+// DB dependency:
+// - Requires stored procedure: sp_UpdateAppointment(IN..., OUT p_appointmentID)
 app.post('/appointments/update', async function (req, res) {
   try {
     // Parse frontend form information
@@ -523,32 +614,6 @@ app.post('/appointments/update', async function (req, res) {
 
     // Redirect the user to the updated webpage data
     res.redirect('/appointments');
-  }
-  catch (error) {
-    console.error('Error executing queries:', error);
-    // Send a generic error message to the browser
-    res.status(500).send('An error occurred while executing the database queries.');
-  }
-});
-
-
-app.post('/clinics/update', async function (req, res) {
-  try {
-    // Parse frontend form information
-    const data = req.body;
-
-    // Create and execute our query
-    // Using parameterized queries (Prevents SQL injection attacks)
-    const query1 = `CALL sp_UpdateClinic(?, ?);`;
-    await db.query(query1, [
-      data.update_clinicID,
-      data.update_city,
-    ]);
-
-    console.log(`UPDATE clinics. ID ${data.update_clinicID} ` + `City: ${data.update_city}`);
-
-    // Redirect the user to the updated webpage data
-    res.redirect('/clinics');
   }
   catch (error) {
     console.error('Error executing queries:', error);
@@ -615,6 +680,14 @@ app.post('/patients/delete', async function (req, res) {
   }
 });
 
+// DELETE appointment-type
+// Purpose:
+// - Delete one appointment type row by typeID via stored procedure
+// Form dependency:
+// - Expects request body field: delete_typeID
+// DB dependency:
+// - Requires stored procedure: sp_DeleteAppointmentType(IN p_typeID INT)
+// - May fail if FK constraints exist (e.g., typeID referenced in Appointments)
 app.post('/appointment-types/delete', async function (req, res) {
   try {
     // Parse frontend form information
@@ -639,9 +712,10 @@ app.post('/appointment-types/delete', async function (req, res) {
 
 // DELETE provider
 // Purpose:
-// - Delete one provider row via stored procedure
+// - Delete one provider row by providerID via stored procedure
 // DB dependency:
-// - Requires stored procedure: sp_DeleteProvider
+// - Requires stored procedure: sp_DeleteProvider(IN p_providerID INT)
+// - May fail if FK constraints exist (e.g., provider referenced in Appointments or ProviderLocations)
 app.post('/providers/delete', async function (req, res) {
   try {
     const data = req.body;
@@ -660,29 +734,14 @@ app.post('/providers/delete', async function (req, res) {
   }
 });
 
-app.post('/appointments/delete', async function (req, res) {
-  try {
-    // Parse frontend form information
-    let data = req.body;
-
-    // Create and execute our query
-    // Using parameterized queries (Prevents SQL injection attacks)
-    const query1 = 'CALL sp_DeleteAppointment(?);';
-    await db.query(query1, [data.delete_appointmentID]);
-
-    console.log(`DELETE appointment. ID: ${data.delete_appointmentID}`);
-
-    // Redirect the user to the updated webpage data
-    res.redirect('/appointments');
-  }
-  catch (error) {
-    console.error('Error executing queries:', error);
-    // Send a generic error message to the browser
-    res.status(500).send('Unable to delete appointment. Appointment status must be "Voided" in order to delete.');
-  }
-});
-
-
+// DELETE clinic
+// Purpose:
+// - Delete one clinic row by clinicID via stored procedure
+// Form dependency:
+// - Expects request body field: delete_clinicID
+// DB dependency:
+// - Requires stored procedure: sp_DeleteClinic(IN p_clinicID INT)
+// - May fail if FK constraints exist (e.g., clinic referenced in Appointments or ProviderLocations)
 app.post('/clinics/delete', async function (req, res) {
   try {
     // Parse frontend form information
@@ -702,6 +761,36 @@ app.post('/clinics/delete', async function (req, res) {
     console.error('Error executing queries:', error);
     // Send a generic error message to the browser
     res.status(500).send('Unable to delete clinic. It may be referenced to an appointment record');
+  }
+});
+
+// DELETE appointment
+// Purpose:
+// - Delete one appointment row by appointmentID via stored procedure
+// Form dependency:
+// - Expects request body field: delete_appointmentID
+// DB dependency:
+// - Requires stored procedure: sp_DeleteAppointment(IN p_appointmentID INT)
+// - May fail if FK constraints exist (e.g., appointment referenced in other tables)
+app.post('/appointments/delete', async function (req, res) {
+  try {
+    // Parse frontend form information
+    let data = req.body;
+
+    // Create and execute our query
+    // Using parameterized queries (Prevents SQL injection attacks)
+    const query1 = 'CALL sp_DeleteAppointment(?);';
+    await db.query(query1, [data.delete_appointmentID]);
+
+    console.log(`DELETE appointment. ID: ${data.delete_appointmentID}`);
+
+    // Redirect the user to the updated webpage data
+    res.redirect('/appointments');
+  }
+  catch (error) {
+    console.error('Error executing queries:', error);
+    // Send a generic error message to the browser
+    res.status(500).send('Unable to delete appointment. Appointment status must be "Voided" in order to delete.');
   }
 });
 
