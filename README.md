@@ -10,7 +10,7 @@ Janeway's OBGYN Association is a database-backed administrative web app for mana
 From the app folder:
 
 ```bash
-cd projectgroup16_step3_DRAFT
+cd projectgroup16_FINAL
 npm install
 npm run development
 ```
@@ -23,7 +23,7 @@ Typical classwork deployment flow:
 
 ```bash
 git pull origin main
-cd projectgroup16_step3_DRAFT
+cd projectgroup16_FINAL
 npm install
 npm run production
 ```
@@ -43,6 +43,12 @@ The application supports CRUD workflows for:
 - Appointments
 - Provider Locations (M:N intersection table)
 
+## 🧩 Current UI Behavior
+- Browse tables use consistent row-level `Edit` and `Delete` action buttons.
+- `Delete` opens a confirmation modal before submitting.
+- `Edit` opens a pre-populated modal form for the selected row.
+- Legacy inline UPDATE/DELETE form sections are preserved in views as commented fallback blocks.
+
 ## ✅ Project Objectives
 - Design and implement a normalized relational schema.
 - Build a web UI that supports required CS340 CRUD workflows.
@@ -56,15 +62,15 @@ The application supports CRUD workflows for:
 - **Frontend:** HTML/CSS (server-rendered pages)
 
 ## 📁 Repository Structure
-- `projectgroup16_step3_DRAFT/`
+- `projectgroup16_FINAL/`
 	- `app.js` — Express server and route handlers
 	- `database/` — DB connection logic
 	- `views/` — Handlebars UI pages
 	- `public/` — Static assets (CSS)
 	- `package.json` — Scripts and dependencies
-- `projectgroup16_step3_DRAFT/group16_DDL.sql` — Schema + sample data
-- `projectgroup16_step3_DRAFT/group16_DML.sql` — Data manipulation queries
-- `projectgroup16_step3_DRAFT/plsql.sql` — Stored procedures (including RESET and CUD procedures)
+- `projectgroup16_FINAL/group16_DDL.sql` — Schema + sample data
+- `projectgroup16_FINAL/group16_DML.sql` — Data manipulation queries
+- `projectgroup16_FINAL/plsql.sql` — Stored procedures (including RESET and CUD procedures)
 
 ## 🌿 Branching Strategy
 - `main` — stable branch
