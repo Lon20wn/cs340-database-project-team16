@@ -3,6 +3,10 @@
 // Adapted from CS340 Node.js starter/exploration materials.
 // Source: CS340 Web Application Technology Exploration and Node Part 2 walkthrough.
 // Source URL: https://canvas.oregonstate.edu/
+// Additional citation:
+// Date: 5/28/26
+// Adapted from and based on: CS340 Exploration - Implementing CUD operations in your app
+// Source URL: https://canvas.oregonstate.edu/courses/2042369/pages/exploration-implementing-cud-operations-in-your-app?module_item_id=26640205
 
 const express = require('express');
 const { engine } = require('express-handlebars');
