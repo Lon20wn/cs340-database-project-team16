@@ -28,6 +28,7 @@ It follows the same Step 3 draft structure as the other entity pages.
             {{@key}}
           </th>
           {{/each}}
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -39,6 +40,20 @@ It follows the same Step 3 draft structure as the other entity pages.
           <td>{{this.firstName}}</td>
           <td>{{this.lastName}}</td>
           <td>{{this.city}}</td>
+          <td>
+            <button class="btn-edit" type="button"
+              data-id="{{this.locationID}}"
+              data-providerid="{{this.providerID}}"
+              data-clinicid="{{this.clinicID}}"
+              data-name="{{this.firstName}} {{this.lastName}} @ {{this.city}}">
+              Edit
+            </button>
+            <button class="btn-delete" type="button"
+              data-id="{{this.locationID}}"
+              data-name="{{this.firstName}} {{this.lastName}} @ {{this.city}}">
+              Delete
+            </button>
+          </td>
         </tr>
         {{/each}}
       </tbody>
@@ -70,6 +85,7 @@ It follows the same Step 3 draft structure as the other entity pages.
   </form>
 </div>
 
+{{!-- UPDATE SECTION - COMMENTED OUT FOR NOW
 <!-- UPDATE -->
 <div class="card">
   <h2>Update a Provider Location</h2>
@@ -93,10 +109,13 @@ It follows the same Step 3 draft structure as the other entity pages.
     <input type="submit" value="Update Provider Location" />
   </form>
 </div>
+--}}
 
+{{!-- DELETE SECTION - COMMENTED OUT FOR NOW
 <!-- DELETE -->
 <div class="card">
   <h2>Delete a Provider Location</h2>
+  <!-- Delete remains a simple selector + submit UI for this draft phase. -->
   <form action="/provider-locations/delete" method="POST">
     <label for="delete_locationID">Provider Location to Delete:</label>
     <select id="delete_locationID" name="delete_locationID" required>
@@ -109,3 +128,4 @@ It follows the same Step 3 draft structure as the other entity pages.
     <input type="submit" value="Delete Provider Location" />
   </form>
 </div>
+--}}

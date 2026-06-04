@@ -28,7 +28,7 @@ sample values from the DDL and field naming consistent with the DML.
             {{@key}}
           </th>
           {{/each}}
-          <th>Actions</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -40,8 +40,19 @@ sample values from the DDL and field naming consistent with the DML.
           <td>{{this.startDate}}</td>
           <td>{{this.title}}</td>
           <td>
-            <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
-            <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
+            <button class="btn-edit" type="button"
+              data-id="{{this.providerID}}"
+              data-firstname="{{this.firstName}}"
+              data-lastname="{{this.lastName}}"
+              data-startdate="{{this.startDate}}"
+              data-title="{{this.title}}">
+              Edit
+            </button>
+            <button class="btn-delete" type="button"
+              data-id="{{this.providerID}}"
+              data-name="{{this.title}} {{this.firstName}} {{this.lastName}}">
+              Delete
+            </button>
           </td>
         </tr>
         {{/each}}
@@ -53,7 +64,7 @@ sample values from the DDL and field naming consistent with the DML.
 <!-- CREATE -->
 <div class="card">
   <h2> Add a Provider</h2>
-  {{!-- Field names reflect the DML Add Provider query. --}}
+  {{! Field names reflect the DML Add Provider query. }}
   <form action="/providers/create" method="POST">
     <label for="create_providerID">Provider ID:</label>
     <input type="number" id="create_providerID" name="providerID" min="100" required />
@@ -79,10 +90,9 @@ sample values from the DDL and field naming consistent with the DML.
   </form>
 </div>
 
-<!-- UPDATE -->
+{{!-- UPDATE SECTION - COMMENTED OUT FOR NOW
 <div class="card">
   <h2>Update a Provider</h2>
-  {{!-- Update form remains UI-only for Step 3 Draft. --}}
   <form action="/providers/update" method="POST">
     <label for="update_providerID_lookup">Provider to Update:</label>
     <select id="update_providerID_lookup" name="update_providerID" required>
@@ -114,11 +124,13 @@ sample values from the DDL and field naming consistent with the DML.
     <input type="submit" value="Update Provider" />
   </form>
 </div>
+--}}
 
+{{!-- DELETE SECTION - COMMENTED OUT FOR NOW
 <!-- DELETE -->
 <div class="card">
   <h2>Delete a Provider</h2>
-  {{!-- Delete remains a simple selector + submit UI for this draft phase. --}}
+  <!-- Delete remains a simple selector + submit UI for this draft phase. -->
   <form action="/providers/delete" method="POST">
     <label for="delete_providerID">Provider to Delete:</label>
     <select id="delete_providerID" name="delete_providerID" required>
@@ -133,3 +145,4 @@ sample values from the DDL and field naming consistent with the DML.
     <input type="submit" value="Delete Provider" />
   </form>
 </div>
+--}}

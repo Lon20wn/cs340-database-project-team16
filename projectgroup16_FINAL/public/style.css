@@ -150,6 +150,7 @@ ul {
     font-size: 12px;
     margin-right: 6px;
     white-space: nowrap;
+    cursor: pointer;
 }
 
 /* Prevent the Actions column from wrapping buttons onto separate lines. */
@@ -185,4 +186,95 @@ td {
     border: 1px solid;
     padding: 12px;
     text-align: center;
+}
+
+/* Shared modal used for row-level edit/delete actions. */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.modal-overlay[hidden] {
+    display: none !important;
+}
+
+.modal {
+    width: min(92vw, 460px);
+    background: var(--card-bg);
+    color: var(--text);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 18px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.modal h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.modal p {
+    margin-top: 0;
+    margin-bottom: 16px;
+    line-height: 1.4;
+}
+
+.modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.modal-field label {
+    font-weight: 600;
+}
+
+.modal-field input,
+.modal-field select {
+    padding: 8px;
+    border: 1px solid var(--field-border);
+    border-radius: 4px;
+    font-size: 14px;
+    background: var(--card-bg);
+    color: var(--text);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.modal-btn {
+    border: 0;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.modal-btn.secondary {
+    background: #6b7280;
+    color: #fff;
+}
+
+.modal-btn.primary {
+    background: var(--submit-bg);
+    color: #fff;
+}
+
+.modal-btn.danger {
+    background: #dc2626;
+    color: #fff;
 }

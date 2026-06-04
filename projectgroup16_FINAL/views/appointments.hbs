@@ -35,6 +35,7 @@ see planned CRUD coverage for the Appointments entity.
           </th>
           {{/each}}
           <th></th>
+        </tr>
       </thead>
       <tbody>
         {{! For each row, print the appointmentID, apptDateTime, apptStatus, typeID, patientID, providerID, and clinicID
@@ -48,17 +49,23 @@ see planned CRUD coverage for the Appointments entity.
           <td>{{this.patientID}}</td>
           <td>{{this.providerID}}</td>
           <td>{{this.clinicID}}</td>
-
-          {{! DELETE form }}
-          <form id="delete_appointment_form" method="POST" action="/appointments/delete">
-            <input type="hidden" name="delete_appointmentID" value="{{this.appointmentID}}" />
-            <input type="hidden" name="delete_apptDateTime" value="{{this.apptDateTime}}" />
-            <td>
-              <button type="submit">
-                Delete
-              </button>
-            </td>
-          </form>
+          <td>
+            <button class="btn-edit" type="button"
+              data-id="{{this.appointmentID}}"
+              data-datetime="{{this.apptDateTime}}"
+              data-status="{{this.apptStatus}}"
+              data-typeid="{{this.typeID}}"
+              data-patientid="{{this.patientID}}"
+              data-providerid="{{this.providerID}}"
+              data-clinicid="{{this.clinicID}}">
+              Edit
+            </button>
+            <button class="btn-delete" type="button"
+              data-id="{{this.appointmentID}}"
+              data-name="Appointment #{{this.appointmentID}} ({{this.apptStatus}})">
+              Delete
+            </button>
+          </td>
         </tr>
         {{/each}}
       </tbody>
@@ -120,16 +127,10 @@ see planned CRUD coverage for the Appointments entity.
   </form>
 </div>
 
-<!-- UPDATE -->
+{{!-- UPDATE SECTION - COMMENTED OUT FOR NOW
 <div class="card">
   <h2>Update an Appointment</h2>
-  {{!--
-  Step 3 note:
-  Update form is UI-only in this draft. Backend update logic is implemented
-  in later steps.
-  --}}
   <form class="cuForm" id="update_appointment_form" method="POST" action="/appointments/update">
-    {{!-- Update options mirror the DML update query inputs for this entity. --}}
     <label for="update_appointmentID">Appointment to Update:</label>
     <select id="update_appointmentID" name="update_appointmentID" required>
       <option value="" disabled selected>Select an appointment</option>
@@ -170,7 +171,7 @@ see planned CRUD coverage for the Appointments entity.
     <select id="update_providerID" name="update_providerID">
       <option value="" disabled selected>Select a provider</option>
       {{#each provider_IDs}}
-      <option value="{{this.providerID}}" required>{{this.providerID}} - {{this.title}} {{this.lastName}}</option>"
+      <option value="{{this.providerID}}" required>{{this.providerID}} - {{this.title}} {{this.lastName}}</option>
       {{/each}}
     </select>
 
@@ -185,4 +186,24 @@ see planned CRUD coverage for the Appointments entity.
     <input type="submit" value="Update Appointment" />
   </form>
 </div>
+--}}
+
+{{!-- DELETE SECTION - COMMENTED OUT FOR NOW
+<!-- DELETE -->
+<div class="card">
+  <h2>Delete an Appointment</h2>
+  <!-- Delete remains a simple selector + submit UI for this draft phase. -->
+  <form class='cuForm' id='delete_appointment_form' method='POST' action="/appointments/delete">
+    <label for="delete_appointmentID">Appointment to Delete:</label>
+    <select id="delete_appointmentID" name="delete_appointmentID" required>
+      <option value="" disabled selected>Select an appointment</option>
+      {{#each appointments}}
+      <option value="{{this.appointmentID}}" required>{{this.appointmentID}} - {{this.apptDateTime}}</option>
+      {{/each}}
+    </select>
+
+    <input type="submit" value="Delete Appointment" />
+  </form>
+</div>
+--}}
 

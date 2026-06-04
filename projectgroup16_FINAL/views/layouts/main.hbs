@@ -44,7 +44,39 @@ Source URL: https://canvas.oregonstate.edu/
     {{{body}}}
   </main>
 
+  {{!--
+  Global modals live in the layout so every page can use the same UI components.
+  1) confirm-modal = delete confirmation dialog
+  2) edit-modal    = dynamic update form dialog built from pageConfig below
+  --}}
+  <div id="confirm-modal" class="modal-overlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title">
+      <h3 id="confirm-modal-title">Confirm Delete</h3>
+      <p id="confirm-modal-message"></p>
+      <div class="modal-actions">
+        <button id="confirm-modal-cancel" type="button" class="modal-btn secondary">Cancel</button>
+        <button id="confirm-modal-submit" type="button" class="modal-btn danger">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="edit-modal" class="modal-overlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
+      <h3 id="edit-modal-title">Edit Record</h3>
+      <form id="edit-modal-form" method="POST" class="modal-form">
+        <div id="edit-modal-fields"></div>
+        <div class="modal-actions">
+          <button id="edit-modal-cancel" type="button" class="modal-btn secondary">Cancel</button>
+          <button id="edit-modal-submit" type="submit" class="modal-btn primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script>
+    // ============================================================
+    // SECTION A: Theme toggle (light/dark mode)
+    // ============================================================
     // Theme preference is preserved between page loads using localStorage.
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.body.dataset.theme = savedTheme;
@@ -63,6 +95,285 @@ Source URL: https://canvas.oregonstate.edu/
       document.body.dataset.theme = nextTheme;
       localStorage.setItem('theme', nextTheme);
       updateToggleIcon();
+    });
+
+    // ============================================================
+    // SECTION B: Modal element references and per-page config
+    // ============================================================
+    // Modal behavior for row-level Edit/Delete actions.
+    const confirmModal = document.getElementById('confirm-modal');
+    const confirmMessage = document.getElementById('confirm-modal-message');
+    const confirmCancel = document.getElementById('confirm-modal-cancel');
+    const confirmSubmit = document.getElementById('confirm-modal-submit');
+    let confirmHandler = null;
+
+    const editModal = document.getElementById('edit-modal');
+    const editForm = document.getElementById('edit-modal-form');
+    const editFields = document.getElementById('edit-modal-fields');
+    const editCancel = document.getElementById('edit-modal-cancel');
+
+    // pageConfig maps each route to:
+    // - delete endpoint + form field name
+    // - update endpoint + editable fields used to build the Edit modal form
+    // Data keys must match data-* attributes on each row Edit/Delete button.
+    const pageConfig = {
+      '/patients': {
+        delete: { action: '/patients/delete', field: 'delete_patientID' },
+        update: {
+          action: '/patients/update',
+          idField: { name: 'update_patientID', dataKey: 'id' },
+          fields: [
+            { name: 'update_firstName', label: 'First Name', type: 'text', dataKey: 'firstname', required: true },
+            { name: 'update_lastName', label: 'Last Name', type: 'text', dataKey: 'lastname', required: true },
+            { name: 'update_dateOfBirth', label: 'Date of Birth', type: 'date', dataKey: 'dob', required: true },
+            { name: 'update_address', label: 'Address', type: 'text', dataKey: 'address', required: true },
+            { name: 'update_language', label: 'Language', type: 'text', dataKey: 'language', required: true },
+            { name: 'update_insurancePayor', label: 'Insurance Payor', type: 'text', dataKey: 'insurance', required: true }
+          ]
+        }
+      },
+      '/appointment-types': {
+        delete: { action: '/appointment-types/delete', field: 'delete_typeID' },
+        update: {
+          action: '/appointment-types/update',
+          idField: { name: 'update_typeID', dataKey: 'id' },
+          fields: [
+            { name: 'update_description', label: 'Description', type: 'text', dataKey: 'description', required: true },
+            { name: 'update_durationInMinutes', label: 'Duration (minutes)', type: 'number', dataKey: 'duration', required: true }
+          ]
+        }
+      },
+      '/providers': {
+        delete: { action: '/providers/delete', field: 'delete_providerID' },
+        update: {
+          action: '/providers/update',
+          idField: { name: 'update_providerID', dataKey: 'id' },
+          fields: [
+            { name: 'update_firstName', label: 'First Name', type: 'text', dataKey: 'firstname', required: true },
+            { name: 'update_lastName', label: 'Last Name', type: 'text', dataKey: 'lastname', required: true },
+            { name: 'update_startDate', label: 'Start Date', type: 'date', dataKey: 'startdate', required: true },
+            { name: 'update_title', label: 'Title', type: 'select', dataKey: 'title', sourceSelectId: 'create_title', required: true }
+          ]
+        }
+      },
+      '/clinics': {
+        delete: { action: '/clinics/delete', field: 'delete_clinicID' },
+        update: {
+          action: '/clinics/update',
+          idField: { name: 'update_clinicID', dataKey: 'id' },
+          fields: [
+            { name: 'update_city', label: 'City', type: 'text', dataKey: 'city', required: true }
+          ]
+        }
+      },
+      '/appointments': {
+        delete: { action: '/appointments/delete', field: 'delete_appointmentID' },
+        update: {
+          action: '/appointments/update',
+          idField: { name: 'update_appointmentID', dataKey: 'id' },
+          fields: [
+            { name: 'update_apptDateTime', label: 'Appointment Date/Time', type: 'datetime-local', dataKey: 'datetime', required: true },
+            {
+              name: 'update_apptStatus',
+              label: 'Appointment Status',
+              type: 'select',
+              dataKey: 'status',
+              required: true,
+              options: [
+                { value: 'Scheduled', text: 'Scheduled' },
+                { value: 'Completed', text: 'Completed' },
+                { value: 'Cancelled', text: 'Cancelled' },
+                { value: 'Voided', text: 'Voided -- use to delete' }
+              ]
+            },
+            { name: 'update_typeID', label: 'Appointment Type', type: 'select', dataKey: 'typeid', sourceSelectId: 'create_typeID', required: true },
+            { name: 'update_patientID', label: 'Patient', type: 'select', dataKey: 'patientid', sourceSelectId: 'create_patientID', required: true },
+            { name: 'update_providerID', label: 'Provider', type: 'select', dataKey: 'providerid', sourceSelectId: 'create_providerID', required: true },
+            { name: 'update_clinicID', label: 'Clinic', type: 'select', dataKey: 'clinicid', sourceSelectId: 'create_clinicID', required: true }
+          ]
+        }
+      },
+      '/provider-locations': {
+        delete: { action: '/provider-locations/delete', field: 'delete_locationID' },
+        update: {
+          action: '/provider-locations/update',
+          idField: { name: 'update_locationID', dataKey: 'id' },
+          fields: [
+            { name: 'update_clinicID', label: 'Clinic', type: 'select', dataKey: 'clinicid', sourceSelectId: 'create_clinicID', required: true }
+          ]
+        }
+      }
+    };
+
+    // Returns config for the current page (patients, providers, etc.).
+    const getCurrentConfig = () => pageConfig[window.location.pathname];
+
+    // Converts DB text values into formats HTML inputs expect.
+    const formatValueForType = (type, value) => {
+      if (value === undefined || value === null) return '';
+      const strValue = String(value);
+
+      if (type === 'date') {
+        return strValue.split(/[ T]/)[0];
+      }
+
+      if (type === 'datetime-local') {
+        return strValue.replace(' ', 'T').slice(0, 16);
+      }
+
+      return strValue;
+    };
+
+    // ============================================================
+    // SECTION C: Open/close modal helpers
+    // ============================================================
+    const openConfirmModal = (message, onConfirm) => {
+      confirmMessage.textContent = message;
+      confirmHandler = onConfirm;
+      confirmModal.hidden = false;
+    };
+
+    const closeConfirmModal = () => {
+      confirmModal.hidden = true;
+      confirmHandler = null;
+    };
+
+    const closeEditModal = () => {
+      editModal.hidden = true;
+      editFields.innerHTML = '';
+      editForm.action = '';
+    };
+
+    // Builds select options either from static config or from an existing
+    // page dropdown (used to keep modal choices aligned with current data).
+    const buildSelectOptions = (field) => {
+      if (field.options) {
+        return field.options.map((opt) => ({
+          value: String(opt.value),
+          text: opt.text
+        }));
+      }
+
+      const sourceSelect = document.getElementById(field.sourceSelectId);
+      if (!sourceSelect) return [];
+
+      return Array.from(sourceSelect.options)
+        .filter((opt) => opt.value !== '')
+        .map((opt) => ({
+          value: String(opt.value),
+          text: opt.textContent
+        }));
+    };
+
+    // Creates one label+input/select block inside the Edit modal.
+    const buildFieldElement = (field, editButton) => {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'modal-field';
+
+      const label = document.createElement('label');
+      label.htmlFor = `modal_${field.name}`;
+      label.textContent = field.label;
+
+      let input;
+      const currentValue = formatValueForType(field.type, editButton.dataset[field.dataKey]);
+
+      if (field.type === 'select') {
+        input = document.createElement('select');
+        const options = buildSelectOptions(field);
+        options.forEach((opt) => {
+          const optionEl = document.createElement('option');
+          optionEl.value = opt.value;
+          optionEl.textContent = opt.text;
+          input.appendChild(optionEl);
+        });
+        input.value = currentValue;
+      }
+      else {
+        input = document.createElement('input');
+        input.type = field.type || 'text';
+        input.value = currentValue;
+      }
+
+      input.id = `modal_${field.name}`;
+      input.name = field.name;
+      input.required = field.required !== false;
+
+      wrapper.appendChild(label);
+      wrapper.appendChild(input);
+      return wrapper;
+    };
+
+    // ============================================================
+    // SECTION D: Modal close behavior (buttons + click outside)
+    // ============================================================
+    confirmCancel.addEventListener('click', closeConfirmModal);
+    confirmModal.addEventListener('click', (event) => {
+      if (event.target === confirmModal) {
+        closeConfirmModal();
+      }
+    });
+    confirmSubmit.addEventListener('click', () => {
+      if (typeof confirmHandler === 'function') {
+        confirmHandler();
+      }
+      closeConfirmModal();
+    });
+
+    editCancel.addEventListener('click', closeEditModal);
+    editModal.addEventListener('click', (event) => {
+      if (event.target === editModal) {
+        closeEditModal();
+      }
+    });
+
+    // ============================================================
+    // SECTION E: Global click delegation for row action buttons
+    // - .btn-delete opens confirm modal and posts delete on confirm
+    // - .btn-edit opens edit modal prefilled from row data attributes
+    // ============================================================
+    document.addEventListener('click', (event) => {
+      const config = getCurrentConfig();
+      if (!config) return;
+
+      const deleteButton = event.target.closest('.btn-delete');
+      if (deleteButton) {
+        event.preventDefault();
+        const rowLabel = deleteButton.dataset.name || `ID ${deleteButton.dataset.id}`;
+        openConfirmModal(`Delete ${rowLabel}? This action cannot be undone.`, () => {
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = config.delete.action;
+
+          const hidden = document.createElement('input');
+          hidden.type = 'hidden';
+          hidden.name = config.delete.field;
+          hidden.value = deleteButton.dataset.id;
+
+          form.appendChild(hidden);
+          document.body.appendChild(form);
+          form.submit();
+        });
+        return;
+      }
+
+      const editButton = event.target.closest('.btn-edit');
+      if (editButton) {
+        event.preventDefault();
+        editFields.innerHTML = '';
+        editForm.action = config.update.action;
+
+        const idInput = document.createElement('input');
+        idInput.type = 'hidden';
+        idInput.name = config.update.idField.name;
+        idInput.value = editButton.dataset[config.update.idField.dataKey] || '';
+        editFields.appendChild(idInput);
+
+        config.update.fields.forEach((field) => {
+          editFields.appendChild(buildFieldElement(field, editButton));
+        });
+
+        editModal.hidden = false;
+      }
     });
   </script>
 </body>

@@ -37,17 +37,19 @@ sample values from the DDL and field naming consistent with the DML.
           <td>{{this.typeID}}</td>
           <td>{{this.description}}</td>
           <td>{{this.durationInMinutes}}</td>
-
-          
-            {{! DELETE form }}
-            <form id='delete_appointment_type_form' method="POST" action='/appointment-types/delete'>
-              <input type="hidden" name="delete_typeID" value="{{this.typeID}}" />
-              <td>
-                <button class="btn-delete" type='submit'>
-                Delete
-                </button>
-              </td>
-            </form>
+          <td>
+            <button class="btn-edit" type="button"
+              data-id="{{this.typeID}}"
+              data-description="{{this.description}}"
+              data-duration="{{this.durationInMinutes}}">
+              Edit
+            </button>
+            <button class="btn-delete" type="button"
+              data-id="{{this.typeID}}"
+              data-name="{{this.typeID}} - {{this.description}}">
+              Delete
+            </button>
+          </td>
         </tr>
         {{/each}}
       </tbody>
@@ -73,10 +75,9 @@ sample values from the DDL and field naming consistent with the DML.
   </form>
 </div>
 
-<!-- UPDATE -->
+{{!-- UPDATE SECTION - COMMENTED OUT FOR NOW
 <div class="card">
   <h2>Update an Appointment Type</h2>
-  {{!-- Update form remains UI-only for Step 3 Draft. --}}
   <form class='cuForm' id="update_appointment_type_from" method="POST" action='/appointment-types/update'>
     <label for="update_typeID_lookup">Appointment Type to Update:</label>
     <select id="update_typeID_lookup" name="update_typeID" required>
@@ -97,3 +98,25 @@ sample values from the DDL and field naming consistent with the DML.
     <input type="submit" value="Update Appointment Type" />
   </form>
 </div>
+--}}
+
+{{!-- DELETE SECTION - COMMENTED OUT FOR NOW
+<!-- DELETE -->
+<div class="card">
+  <h2>Delete an Appointment Type</h2>
+  <!-- Delete remains a simple selector + submit UI for this draft phase. -->
+  <form class='cuForm' id='delete_appointment_type_form' method='POST' action="/appointment-types/delete">
+    <label for="delete_typeID">Appointment Type to Delete:</label>
+    <select id="delete_typeID" name="delete_typeID" required>
+      <option value="">Select an Appointment Type</option>
+      {{#each appointment_types}}
+      <option value="{{this.typeID}}" required>
+        {{this.typeID}} - {{this.description}}
+      </option>
+      {{/each}}
+    </select>
+
+    <input type="submit" value="Delete Appointment Type" />
+  </form>
+</div>
+--}}

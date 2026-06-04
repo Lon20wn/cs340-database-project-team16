@@ -37,16 +37,18 @@ the project UI stays consistent across all tables.
       <tr>
         <td>{{this.clinicID}}</td>
         <td>{{this.city}}</td>
-
-        {{! DELETE form}}
-        <form id="delete_clinic_form" method="POST" action="/clinics/delete">
-          <input type="hidden" name="delete_clinicID" value="{{this.clinicID}}" />
-          <td>
-            <button type="submit">
-              Delete
-            </button>
-          </td>
-        </form>
+        <td>
+          <button class="btn-edit" type="button"
+            data-id="{{this.clinicID}}"
+            data-city="{{this.city}}">
+            Edit
+          </button>
+          <button class="btn-delete" type="button"
+            data-id="{{this.clinicID}}"
+            data-name="{{this.city}}">
+            Delete
+          </button>
+        </td>
       </tr>
       {{/each}}
     </tbody>
@@ -65,10 +67,9 @@ the project UI stays consistent across all tables.
   </form>
 </div>
 
-<!-- UPDATE -->
+{{!-- UPDATE SECTION - COMMENTED OUT FOR NOW
 <div class="card">
   <h2>Update a Clinic</h2>
-  {{!-- Update form is UI-only for this Step 3 draft. --}}
   <form class='cuForm' id='update_clinic' method="POST" action="/clinics/update">
     <label for="update_clinicID">Clinic to Update:</label>
     <select id="update_clinicID" name="update_clinicID" required>
@@ -86,3 +87,25 @@ the project UI stays consistent across all tables.
     <input type="submit" value="Update Clinic" />
   </form>
 </div>
+--}}
+
+{{!-- DELETE SECTION - COMMENTED OUT FOR NOW
+<!-- DELETE -->
+<div class="card">
+  <h2>Delete a Clinic</h2>
+  <!-- Delete remains a simple selector + submit UI for this draft phase. -->
+  <form class='cuForm' id='delete_clinic_form' method='POST' action="/clinics/delete">
+    <label for="delete_clinicID">Clinic to Delete:</label>
+    <select id="delete_clinicID" name="delete_clinicID" required>
+      <option value="" disabled selected>Select a clinic</option>
+      {{#each clinic}}
+      <option value="{{this.clinicID}}" required>
+        {{this.clinicID}} - {{this.city}}
+      </option>
+      {{/each}}
+    </select>
+
+    <input type="submit" value="Delete Clinic" />
+  </form>
+</div>
+--}}
