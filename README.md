@@ -1,46 +1,12 @@
-# Janeway's OBGYN Association Database Project
+# Janeway's OBGYN Association 🩺
 
 Course project repository for **OSU CS340: Intro to Databases (Spring 2026)**.
 
-## Team
-- Shani Plunkett-de la Cruz
-- Lon Danna
+Janeway's OBGYN Association is a database-backed administrative web app for managing day-to-day clinic operations.
 
-## Project Overview
-This project is a database-backed administrative web application for managing operations at Janeway's OBGYN Association.
+## ⚡ Quick Start
 
-The application supports core data management for:
-- Patients
-- Appointment Types
-- Providers
-- Clinics
-- Appointments
-- Provider Locations (M:N intersection table)
-
-## Objectives
-- Design and implement a normalized relational schema.
-- Build a web UI that supports required CS340 CRUD workflows.
-- Implement SQL-driven data access (DDL, DML, PL/SQL procedures).
-- Deploy and run the application in the OSU classwork environment.
-
-## Tech Stack
-- **Backend:** Node.js + Express
-- **Templating:** Handlebars
-- **Database:** MariaDB / MySQL
-- **Frontend:** HTML/CSS (server-rendered pages)
-
-## Repository Structure
-- `projectgroup16_step3_DRAFT/`
-	- `app.js` — Express server and route handlers
-	- `database/` — DB connection logic
-	- `views/` — Handlebars UI pages
-	- `public/` — Static assets (CSS)
-	- `package.json` — Scripts and dependencies
-- `projectgroup16_step3_DRAFT/group16_DDL.sql` — Schema + sample data
-- `projectgroup16_step3_DRAFT/group16_DML.sql` — Data manipulation queries
-- `projectgroup16_step3_DRAFT/plsql.sql` — Stored procedures (including RESET and CUD procedures)
-
-## Running the App Locally
+### Run Locally
 From the app folder:
 
 ```bash
@@ -52,7 +18,7 @@ npm run development
 Default local URL:
 - http://localhost:9116
 
-## Deployment Notes (Classwork)
+### Classwork Deployment
 Typical classwork deployment flow:
 
 ```bash
@@ -62,23 +28,69 @@ npm install
 npm run production
 ```
 
-If procedures are updated, reload SQL on the class database:
+If stored procedures are updated, reload SQL on the class database:
 
 ```bash
 mysql -u <username> -h classmysql.engr.oregonstate.edu -p <database_name> < plsql.sql
 ```
 
-## Branching Strategy
+## 🎯 Project Scope
+The application supports CRUD workflows for:
+- Patients
+- Appointment Types
+- Providers
+- Clinics
+- Appointments
+- Provider Locations (M:N intersection table)
+
+## ✅ Project Objectives
+- Design and implement a normalized relational schema.
+- Build a web UI that supports required CS340 CRUD workflows.
+- Implement SQL-driven data access (DDL, DML, PL/SQL procedures).
+- Deploy and run the application in the OSU classwork environment.
+
+## 🧰 Tech Stack
+- **Backend:** Node.js + Express
+- **Templating:** Handlebars
+- **Database:** MariaDB / MySQL
+- **Frontend:** HTML/CSS (server-rendered pages)
+
+## 📁 Repository Structure
+- `projectgroup16_step3_DRAFT/`
+	- `app.js` — Express server and route handlers
+	- `database/` — DB connection logic
+	- `views/` — Handlebars UI pages
+	- `public/` — Static assets (CSS)
+	- `package.json` — Scripts and dependencies
+- `projectgroup16_step3_DRAFT/group16_DDL.sql` — Schema + sample data
+- `projectgroup16_step3_DRAFT/group16_DML.sql` — Data manipulation queries
+- `projectgroup16_step3_DRAFT/plsql.sql` — Stored procedures (including RESET and CUD procedures)
+
+## 🌿 Branching Strategy
 - `main` — stable branch
 - `feature-lon` — Lon development work
 - `feature-shani` — Shani development work
 
 Changes are developed on feature branches and merged after review/testing.
 
-## Documentation and Deliverables
-This repository tracks the SQL files, application code, and report artifacts needed for CS340 project step submissions.
+## 📦 Documentation and Deliverables
+This repository tracks SQL files, application code, and report artifacts for CS340 project step submissions.
 
-## Citations and Originality
+## 👥 Teammates
+- Shani Plunkett-de la Cruz
+- Lon Danna
+
+## 🐞 Report a Bug
+If you find a bug or data inconsistency:
+1. Open the repository's Issues tab.
+2. Click **New issue**.
+3. Include:
+	 - Page/feature where the bug appears
+	 - Steps to reproduce
+	 - Expected behavior vs actual behavior
+	 - Relevant error message or screenshot
+
+## 📚 Citations and Originality
 Portions of structure and patterns were adapted from CS340 starter/exploration materials. Team-authored project logic, schema design, and implementation details are documented within project files.
 
 ### AI Tools
