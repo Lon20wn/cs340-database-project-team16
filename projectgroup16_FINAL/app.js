@@ -22,6 +22,123 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
+// ============================ NOTE ============================
+// Error UX strategy:
+// 1) POST routes (create/update/delete) never send a blank error page.
+// 2) On failure, we redirect back to the same entity route with ?error=...
+// 3) GET route reads req.query.error and passes it to the template.
+// 4) Layout renders the shared error banner above page content.
+// ==================================================================
+// Shared helpers for in-page error/success UX.
+// getErrorMessage: reads ?error= from the query string so the GET route can
+// pass it to the template, which renders the shared error banner in main.hbs.
+const getErrorMessage = (req) => req.query.error ? String(req.query.error) : null;
+
+// getSuccessMessage: same pattern as getErrorMessage but for ?success= so
+// the layout can render a green confirmation banner instead of a red error one.
+// Used by /reset right now; can be reused for any future success feedback.
+const getSuccessMessage = (req) => req.query.success ? String(req.query.success) : null;
+
+// NOTE:
+// `error.sqlMessage` often contains the raw MariaDB/MySQL engine error text.
+// That message is helpful for developers, but it is usually too technical for users
+// because it includes schema names, constraint names, and internal table details.
+// We keep the raw error in server logs, but convert it into plain-English guidance
+// before sending it back to the browser.
+const getFriendlyErrorMessage = (path, error, fallbackMessage) => {
+  const dbMessage = error?.sqlMessage || error?.message || '';
+
+  // Duplicate-key/unique constraint failures are common on CREATE and some UPDATE flows.
+  if (error?.code === 'ER_DUP_ENTRY') {
+    switch (path) {
+      case '/providers':
+        // Raw SQL example:
+        // ER_DUP_ENTRY: Duplicate entry '123' for key 'Providers.PRIMARY'
+        return 'Unable to save provider. That provider ID already exists. Please use a different Provider ID.';
+      case '/appointment-types':
+        // Raw SQL example:
+        // ER_DUP_ENTRY: Duplicate entry 'NEWPAT' for key 'AppointmentTypes.PRIMARY'
+        return 'Unable to save appointment type. That Type ID already exists. Please use a different Type ID.';
+      case '/provider-locations':
+        // Raw SQL example:
+        // ER_DUP_ENTRY: Duplicate entry '101-2' for key 'ProviderLocations.unique_provider_clinic'
+        return 'Unable to save provider location. That provider/location combination already exists.';
+      default:
+        // Raw SQL examples:
+        // ER_DUP_ENTRY: Duplicate entry '...' for key '...'
+        return 'Unable to save this record because one of the values must be unique. Please review the form and try again.';
+    }
+  }
+
+  // Foreign-key errors happen when a record is still being referenced elsewhere.
+  if (error?.code === 'ER_ROW_IS_REFERENCED_2' || error?.errno === 1451) {
+    switch (path) {
+      case '/patients':
+        // Raw SQL example:
+        // Cannot delete or update a parent row: a foreign key constraint fails
+        // (`...`.`Appointments`, CONSTRAINT `Appointments_ibfk_patient` FOREIGN KEY (`patientID`) ...)
+        return 'Unable to delete this patient because they are still linked to one or more appointments. Delete or update those appointments first, then try again.';
+      case '/appointment-types':
+        // Raw SQL example:
+        // Cannot delete or update a parent row: a foreign key constraint fails
+        // (`...`.`Appointments`, CONSTRAINT `Appointments_ibfk_type` FOREIGN KEY (`typeID`) ...)
+        return 'Unable to delete this appointment type because it is still being used by one or more appointments. Update or delete those appointments first, then try again.';
+      case '/providers':
+        // Raw SQL example:
+        // Cannot delete or update a parent row: a foreign key constraint fails
+        // (`...`.`ProviderLocations`, CONSTRAINT `ProviderLocations_ibfk_1` FOREIGN KEY (`providerID`) ...)
+        return 'Unable to delete this provider because they are still linked to appointments or provider locations. Remove those related records first, then try again.';
+      case '/clinics':
+        // Raw SQL example:
+        // Cannot delete or update a parent row: a foreign key constraint fails
+        // (`...`.`ProviderLocations`, CONSTRAINT `ProviderLocations_ibfk_2` FOREIGN KEY (`clinicID`) ...)
+        return 'Unable to delete this clinic because it is still linked to appointments or provider locations. Remove those related records first, then try again.';
+      case '/provider-locations':
+        // Raw SQL example:
+        // Cannot delete or update a parent row: a foreign key constraint fails (...)
+        return 'Unable to update or delete this provider location because another record still depends on it. Remove the related dependency first, then try again.';
+      default:
+        // Raw SQL examples:
+        // ER_ROW_IS_REFERENCED_2 / errno 1451
+        return 'Unable to complete this action because the record is still linked to other data. Remove the related records first, then try again.';
+    }
+  }
+
+  // Child-row FK errors happen when submitted IDs do not exist in related tables.
+  if (error?.code === 'ER_NO_REFERENCED_ROW_2' || error?.errno === 1452) {
+    switch (path) {
+      case '/appointments':
+        // Raw SQL example:
+        // Cannot add or update a child row: a foreign key constraint fails
+        // (`...`.`Appointments`, CONSTRAINT `Appointments_ibfk_provider` FOREIGN KEY (`providerID`) ...)
+        return 'Unable to save appointment because one or more selected IDs are invalid (patient, provider, clinic, or appointment type). Please reselect values and try again.';
+      case '/provider-locations':
+        // Raw SQL example:
+        // Cannot add or update a child row: a foreign key constraint fails
+        // (`...`.`ProviderLocations`, CONSTRAINT `ProviderLocations_ibfk_1` FOREIGN KEY (`providerID`) ...)
+        return 'Unable to save provider location because the selected provider or clinic no longer exists. Refresh the page, reselect values, and try again.';
+      default:
+        // Raw SQL examples:
+        // ER_NO_REFERENCED_ROW_2 / errno 1452
+        return 'Unable to save this record because one of the selected related values does not exist. Refresh the page and try again.';
+    }
+  }
+
+  // Appointment deletes have a business-rule requirement, not just a DB constraint.
+  if (path === '/appointments' && dbMessage.toLowerCase().includes('voided')) {
+    // Raw SQL/stored procedure example:
+    // "Unable to delete appointment. Appointment status must be \"Voided\" in order to delete."
+    return 'Unable to delete this appointment until its status is set to Voided. Edit the appointment, change the status to Voided, save the change, and then try deleting it again.';
+  }
+
+  return fallbackMessage;
+};
+
+const redirectWithError = (res, path, error, fallbackMessage) => {
+  const message = getFriendlyErrorMessage(path, error, fallbackMessage);
+  return res.redirect(`${path}?error=${encodeURIComponent(message)}`);
+};
+
 // Shared Handlebars setup for all entity pages.
 app.engine('.hbs', engine({ extname: '.hbs' }));
 app.set('view engine', '.hbs');
@@ -35,18 +152,29 @@ app.set('view engine', '.hbs');
 // Step 3 Draft routes:
 // These routes are intentionally lightweight and primarily serve browsable UI pages.
 app.get('/', (req, res) => {
-  res.render('home');
+  // NOTE: pass errorMessage and successMessage so the shared layout banners
+  // (defined in main.hbs) work on the home page too.
+  // Example: clicking Reset Database from the home page redirects here with
+  // ?success=Database+reset+successfully. which triggers the green banner.
+  const errorMessage = getErrorMessage(req);
+  const successMessage = getSuccessMessage(req);
+  res.render('home', { errorMessage, successMessage });
 });
 
 // READ patients
 // Purpose:
 // - Fetch all patient rows from the Patients table
 // - Render the patients.hbs page with live DB data
-// Notes:
+// NOTES:
 // - The view will receive an array named `patients`
 // - Each object in the array has keys matching selected column names
 app.get('/patients', async function (req, res) {
   try {
+    // NOTE: pull error and success text from URL query so banners can render in-page.
+    // Both are passed to the template; main.hbs decides which banner color to show.
+    const errorMessage = getErrorMessage(req);
+    const successMessage = getSuccessMessage(req);
+
     // Query all patient fields needed for the browse table
     const query1 = `
       SELECT
@@ -63,7 +191,7 @@ app.get('/patients', async function (req, res) {
     const [patients] = await db.query(query1);
 
     // Render template and pass DB results to Handlebars
-    res.render('patients', { patients: patients });
+    res.render('patients', { patients: patients, errorMessage: errorMessage, successMessage: successMessage });
   }
   catch (error) {
     // Server-side logging for debugging
@@ -78,11 +206,14 @@ app.get('/patients', async function (req, res) {
 // Purpose:
 // - Fetch all appointment type rows from the AppointmentTypes table
 // - Render the appointment-types.hbs page with live DB data
-// Notes:
+// NOTES:
 // - The view will receive an array named `appointment_types`
 // - Each object in the array has keys matching selected column names
 app.get('/appointment-types', async function (req, res) {
   try {
+    const errorMessage = getErrorMessage(req);
+    const successMessage = getSuccessMessage(req);
+
     // Create and execute our queries
     // In query1 we use a JOIn clause to display the names of the homeworlds
     const query1 = `SELECT AppointmentTypes.typeID, AppointmentTypes.description, AppointmentTypes.durationInMinutes FROM AppointmentTypes;`;
@@ -90,7 +221,7 @@ app.get('/appointment-types', async function (req, res) {
 
     // Render the appointment-types.hbs file, and also send the renderer
     // an object that contains our AppointmentTypes information
-    res.render('appointment-types', { appointment_types: appointment_types });
+    res.render('appointment-types', { appointment_types: appointment_types, errorMessage: errorMessage, successMessage: successMessage });
   }
   catch (error) {
     console.error('Error executing queries:', error);
@@ -103,11 +234,14 @@ app.get('/appointment-types', async function (req, res) {
 // Purpose:
 // - Fetch all provider rows from the Providers table
 // - Render the providers.hbs page with live DB data
-// Notes:
+// NOTES:
 // - The view will receive an array named `providers`
 // - Each object in the array has keys matching selected column names
 app.get('/providers', async function (req, res) {
   try {
+    const errorMessage = getErrorMessage(req);
+    const successMessage = getSuccessMessage(req);
+
     // Query all provider fields needed for the browse table
     const query1 = `
     SELECT
@@ -122,7 +256,7 @@ app.get('/providers', async function (req, res) {
     const [providers] = await db.query(query1);
 
     // Render template and pass DB results to Handlebars
-    res.render('providers', { providers: providers });
+    res.render('providers', { providers: providers, errorMessage: errorMessage, successMessage: successMessage });
   }
   catch (error) {
     // Server-side logging for debugging
@@ -137,18 +271,21 @@ app.get('/providers', async function (req, res) {
 // Purpose:
 // - Fetch all clinic rows from the Clinics table
 // - Render the clinics.hbs page with live DB data
-// Notes:
+// NOTES:
 // - The view will receive an array named `clinic`
 // - Each object in the array has keys matching selected column names
 app.get('/clinics', async function (req, res) {
   try {
+    const errorMessage = getErrorMessage(req);
+    const successMessage = getSuccessMessage(req);
+
     // Create and execute our queries
     const query1 = `SELECT Clinics.clinicID, Clinics.city FROM Clinics;`;
     const [clinic] = await db.query(query1);
 
     // Render the clinics.hbs file and also send the renderer 
     // an object that contains our Clinics information.
-    res.render('clinics', { clinic: clinic });
+    res.render('clinics', { clinic: clinic, errorMessage: errorMessage, successMessage: successMessage });
   }
   catch (error) {
     console.error('Error executing queries:', error);
@@ -161,11 +298,14 @@ app.get('/clinics', async function (req, res) {
 // Purpose:
 // - Fetch all appointment rows from the Appointments table
 // - Render the appointments.hbs page with live DB data
-// Notes:
+// NOTES:
 // - The view will receive an array named `appointments`
 // - Each object in the array has keys matching selected column names
 app.get('/appointments', async function (req, res) {
   try {
+    const errorMessage = getErrorMessage(req);
+    const successMessage = getSuccessMessage(req);
+
     // Create and execute our queries
     const query1 = `SELECT Appointments.appointmentID, Appointments.apptDateTime, Appointments.apptStatus, Appointments.typeID,
                   Appointments.patientID, Appointments.providerID, Appointments.clinicID FROM Appointments;`;
@@ -183,7 +323,7 @@ app.get('/appointments', async function (req, res) {
     // an object that contains our Appointments information
     res.render('appointments', {
       appointments: appointments, appointment_types: appointment_types, patient_IDs: patient_IDs,
-      provider_IDs: provider_IDs, clinic_IDs: clinic_IDs
+      provider_IDs: provider_IDs, clinic_IDs: clinic_IDs, errorMessage: errorMessage, successMessage: successMessage
     });
   }
   catch (error) {
@@ -196,11 +336,14 @@ app.get('/appointments', async function (req, res) {
 // Purpose:
 // - Fetch all provider-location mappings with provider and clinic details
 // - Render the provider-locations.hbs page with live DB data
-// Notes:
+// NOTES:
 // - The view receives an array named `providerLocations`
 // - Includes provider name, clinic city, and location ID for edit/delete
 app.get('/provider-locations', async function (req, res) {
   try {
+    const errorMessage = getErrorMessage(req);
+    const successMessage = getSuccessMessage(req);
+
     // Query provider locations with provider and clinic details for display
     const query1 = `
       SELECT
@@ -229,7 +372,9 @@ app.get('/provider-locations', async function (req, res) {
     res.render('provider-locations', {
       providerLocations: providerLocations,
       providers: providers,
-      clinics: clinics
+      clinics: clinics,
+      errorMessage: errorMessage,
+      successMessage: successMessage
     });
   }
   catch (error) {
@@ -246,6 +391,9 @@ app.get('/provider-locations', async function (req, res) {
 ----------------------- CREATE ROUTES -----------------------
 -------------------------------------------------------------
 */
+
+// NOTE (UX error): every CREATE catch block now calls redirectWithError(...)
+// so the user stays on the same page and sees an in-page banner.
 
 // CREATE patient
 // Purpose:
@@ -284,7 +432,12 @@ app.post('/patients/create', async function (req, res) {
   }
   catch (error) {
     console.error('Error executing queries:', error);
-    res.status(500).send('An error occurred while executing the database queries.');
+    return redirectWithError(
+      res,
+      '/patients',
+      error,
+      'Unable to create patient. Please verify all required fields and try again.'
+    );
   }
 });
 
@@ -317,8 +470,12 @@ app.post('/appointment-types/create', async function (req, res) {
   }
   catch (error) {
     console.error('Error executing queries:', error);
-    // Send a generic error message to the browser
-    res.status(500).send('An error occurred while executing the database queries.');
+    return redirectWithError(
+      res,
+      '/appointment-types',
+      error,
+      'Unable to create appointment type. Please check the values and try again.'
+    );
   }
 });
 
@@ -345,7 +502,12 @@ app.post('/providers/create', async function (req, res) {
   }
   catch (error) {
     console.error('Error creating provider:', error);
-    res.status(500).send('An error occurred while creating the provider.');
+    return redirectWithError(
+      res,
+      '/providers',
+      error,
+      'Unable to create provider. Please verify required fields and try again.'
+    );
   }
 });
 
@@ -377,7 +539,12 @@ app.post('/clinics/create', async function (req, res) {
   }
   catch (error) {
     console.error('Error executing queries:', error);
-    res.status(500).send('An error occurred while executing the database queries.');
+    return redirectWithError(
+      res,
+      '/clinics',
+      error,
+      'Unable to create clinic. Please verify the city value and try again.'
+    );
   }
 });
 
@@ -418,8 +585,12 @@ app.post('/appointments/create', async function (req, res) {
   }
   catch (error) {
     console.error('Error executing querires:', error);
-    // Send a generic error message to the browser
-    res.status(500).send('An error occurred while excuting the database queries.');
+    return redirectWithError(
+      res,
+      '/appointments',
+      error,
+      'Unable to create appointment. Please verify related IDs and date/time values.'
+    );
   }
 });
 
@@ -442,7 +613,12 @@ app.post('/provider-locations/create', async function (req, res) {
   }
   catch (error) {
     console.error('Error creating provider-location:', error);
-    res.status(500).send('An error occurred while creating the provider location.');
+    return redirectWithError(
+      res,
+      '/provider-locations',
+      error,
+      'Unable to create provider location. Please verify provider and clinic selections.'
+    );
   }
 });
 
@@ -451,6 +627,9 @@ app.post('/provider-locations/create', async function (req, res) {
 ----------------------- UPDATE ROUTES -----------------------
 -------------------------------------------------------------
 */
+
+// NOTE UX error: every UPDATE catch block now calls redirectWithError(...)
+// instead of res.status(...).send(...), which avoids blank error pages.
 
 // UPDATE patient
 // Purpose:
@@ -487,8 +666,12 @@ app.post('/patients/update', async function (req, res) {
   }
   catch (error) {
     console.error('Error executing queries:', error);
-    // Send a generic error message to the browser
-    res.status(500).send('An error occurred while executing the database queries.');
+    return redirectWithError(
+      res,
+      '/patients',
+      error,
+      'Unable to update patient. Please review values and try again.'
+    );
   }
 });
 
@@ -522,8 +705,12 @@ app.post('/appointment-types/update', async function (req, res) {
   }
   catch (error) {
     console.error('Error executing queries:', error);
-    // Send a generic error message to the browser
-    res.status(500).send('An error occurred while executing the database queries.');
+    return redirectWithError(
+      res,
+      '/appointment-types',
+      error,
+      'Unable to update appointment type. Please review values and try again.'
+    );
   }
 });
 
@@ -550,7 +737,12 @@ app.post('/providers/update', async function (req, res) {
   }
   catch (error) {
     console.error('Error updating provider:', error);
-    res.status(500).send('An error occurred while updating the provider.');
+    return redirectWithError(
+      res,
+      '/providers',
+      error,
+      'Unable to update provider. Please review values and try again.'
+    );
   }
 });
 
@@ -581,8 +773,12 @@ app.post('/clinics/update', async function (req, res) {
   }
   catch (error) {
     console.error('Error executing queries:', error);
-    // Send a generic error message to the browser
-    res.status(500).send('An error occurred while executing the database queries.');
+    return redirectWithError(
+      res,
+      '/clinics',
+      error,
+      'Unable to update clinic. Please review values and try again.'
+    );
   }
 });
 
@@ -621,8 +817,12 @@ app.post('/appointments/update', async function (req, res) {
   }
   catch (error) {
     console.error('Error executing queries:', error);
-    // Send a generic error message to the browser
-    res.status(500).send('An error occurred while executing the database queries.');
+    return redirectWithError(
+      res,
+      '/appointments',
+      error,
+      'Unable to update appointment. Please verify related IDs and date/time values.'
+    );
   }
 });
 
@@ -645,7 +845,12 @@ app.post('/provider-locations/update', async function (req, res) {
   }
   catch (error) {
     console.error('Error updating provider-location:', error);
-    res.status(500).send('An error occurred while updating the provider location.');
+    return redirectWithError(
+      res,
+      '/provider-locations',
+      error,
+      'Unable to update provider location. Please verify selections and try again.'
+    );
   }
 });
 
@@ -654,6 +859,9 @@ app.post('/provider-locations/update', async function (req, res) {
 ----------------------- DELETE ROUTES -----------------------
 -------------------------------------------------------------
 */
+
+// NOTE (UX error): every DELETE catch block now calls redirectWithError(...)
+// so FK/constraint failures are shown directly on the entity page.
 
 // DELETE patient
 // Purpose:
@@ -679,8 +887,12 @@ app.post('/patients/delete', async function (req, res) {
   }
   catch (error) {
     console.error('Error executing queries:', error);
-        // Send error message to the browser
-    res.status(500).send('Unable to delete patient. It may be referenced by an appointment record.');
+    return redirectWithError(
+      res,
+      '/patients',
+      error,
+      'Unable to delete patient. It may be referenced by an appointment record.'
+    );
   }
 });
 
@@ -709,8 +921,12 @@ app.post('/appointment-types/delete', async function (req, res) {
   }
   catch (error) {
     console.error('Error executing queries:', error);
-    // Send a generic error message to the browser
-    res.status(500).send('Unable to delete appointment type. It may be referenced in an appointment record.');
+    return redirectWithError(
+      res,
+      '/appointment-types',
+      error,
+      'Unable to delete appointment type. It may be referenced in an appointment record.'
+    );
   }
 });
 
@@ -734,7 +950,12 @@ app.post('/providers/delete', async function (req, res) {
   }
   catch (error) {
     console.error('Error deleting provider:', error);
-    res.status(500).send('An error occurred while deleting the provider.');
+    return redirectWithError(
+      res,
+      '/providers',
+      error,
+      'Unable to delete provider. It may be referenced by appointments or provider locations.'
+    );
   }
 });
 
@@ -763,8 +984,12 @@ app.post('/clinics/delete', async function (req, res) {
   }
   catch (error) {
     console.error('Error executing queries:', error);
-    // Send a generic error message to the browser
-    res.status(500).send('Unable to delete clinic. It may be referenced to an appointment record');
+    return redirectWithError(
+      res,
+      '/clinics',
+      error,
+      'Unable to delete clinic. It may be referenced by an appointment or provider location record.'
+    );
   }
 });
 
@@ -793,8 +1018,12 @@ app.post('/appointments/delete', async function (req, res) {
   }
   catch (error) {
     console.error('Error executing queries:', error);
-    // Send a generic error message to the browser
-    res.status(500).send('Unable to delete appointment. Appointment status must be "Voided" in order to delete.');
+    return redirectWithError(
+      res,
+      '/appointments',
+      error,
+      'Unable to delete appointment. Appointment status must be "Voided" in order to delete.'
+    );
   }
 });
 
@@ -814,7 +1043,12 @@ app.post('/provider-locations/delete', async function (req, res) {
   }
   catch (error) {
     console.error('Error deleting provider-location:', error);
-    res.status(500).send('An error occurred while deleting the provider location.');
+    return redirectWithError(
+      res,
+      '/provider-locations',
+      error,
+      'Unable to delete provider location. Please try again.'
+    );
   }
 });
 
@@ -838,8 +1072,15 @@ app.post('/reset', async function (req, res) {
 
     console.log(`Database has been reset`);
 
-    // Redirect the user back to the home page
-    res.redirect('/');
+    // Redirect user back to where reset was clicked from.
+    // Safety check: only allow internal app paths (must start with '/').
+    const returnTo = typeof req.body.returnTo === 'string' ? req.body.returnTo : '/';
+    const safeReturnTo = returnTo.startsWith('/') ? returnTo : '/';
+
+    // Append ?success= so the GET route on the destination page can pass
+    // successMessage to the template, which renders the green confirmation banner.
+    // The JS in main.hbs will strip this param after one render (same pattern as ?error=).
+    res.redirect(`${safeReturnTo}${safeReturnTo.includes('?') ? '&' : '?'}success=${encodeURIComponent('Database reset successfully.')}`);
   }
   catch (error) {
     console.error('Error executing queries:', error);

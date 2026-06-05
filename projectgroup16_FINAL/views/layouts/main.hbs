@@ -32,15 +32,53 @@ Source URL: https://canvas.oregonstate.edu/
       <a href="/appointments">Appointments</a>
       <a href="/provider-locations">Provider Locations</a>
     </div>
-    {{!--
-    UI enhancement note:
-    Theme toggle switches between light and dark mode for readability.
-    Preference is stored locally in the browser using localStorage.
-    --}}
-    <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark mode">🌙</button>
+    <div class="nav-controls">
+      {{!--
+      Reset button is shared in the layout so it is available from every page.
+      --}}
+      <form action="/reset" method="POST" class="reset-form">
+        <input type="hidden" name="returnTo" id="reset-return-to" value="/" />
+        <button type="submit" class="reset-btn">Reset Database</button>
+      </form>
+      {{!--
+      UI enhancement note:
+      Theme toggle switches between light and dark mode for readability.
+      Preference is stored locally in the browser using localStorage.
+      --}}
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark mode">🌙</button>
+    </div>
   </nav>
 
   <main>
+    {{!--
+    NOTE (UX error): Shared in-page error banner.
+    Any GET route can pass `errorMessage` and this banner will render once here,
+    above the page body, so every entity page gets consistent error UX.
+    --}}
+    {{!--
+    NOTE (UX error): Shared in-page error banner (red).
+    Rendered when a GET route passes `errorMessage` (set by redirectWithError).
+    --}}
+    {{#if errorMessage}}
+    <div class="alert-banner alert-banner-error" role="alert" aria-live="polite">
+      <strong>Action could not be completed.</strong>
+      <span>{{errorMessage}}</span>
+    </div>
+    {{/if}}
+
+    {{!--
+    NOTE (UX success): Shared in-page success banner (green).
+    Rendered when a GET route passes `successMessage`.
+    Currently used by /reset to confirm the database was reset.
+    Same one-time display pattern as the error banner — JS below strips
+    ?success= from the URL after the first render so it won't reappear on refresh.
+    --}}
+    {{#if successMessage}}
+    <div class="alert-banner alert-banner-success" role="status" aria-live="polite">
+      <strong>Success!</strong>
+      <span>{{successMessage}}</span>
+    </div>
+    {{/if}}
     {{{body}}}
   </main>
 
@@ -96,6 +134,36 @@ Source URL: https://canvas.oregonstate.edu/
       localStorage.setItem('theme', nextTheme);
       updateToggleIcon();
     });
+
+    // NOTE (UI banner cleanup): Both error and success banners are one-time feedback.
+    // After the page renders with ?error= or ?success= in the URL, we immediately
+    // strip those params using history.replaceState so a page refresh won't
+    // re-show the banner. This does NOT reload the page — it just cleans the URL.
+    const urlParams = new URLSearchParams(window.location.search);
+    let urlNeedsClean = false;
+
+    if (urlParams.has('error')) {
+      urlParams.delete('error');
+      urlNeedsClean = true;
+    }
+
+    // Same cleanup for ?success= (e.g. after database reset confirmation).
+    if (urlParams.has('success')) {
+      urlParams.delete('success');
+      urlNeedsClean = true;
+    }
+
+    if (urlNeedsClean) {
+      const remainingQuery = urlParams.toString();
+      const cleanUrl = `${window.location.pathname}${remainingQuery ? `?${remainingQuery}` : ''}${window.location.hash}`;
+      window.history.replaceState({}, document.title, cleanUrl);
+    }
+
+    // Keep reset flow on current page by posting this page path back to /reset.
+    const resetReturnToInput = document.getElementById('reset-return-to');
+    if (resetReturnToInput) {
+      resetReturnToInput.value = `${window.location.pathname}${window.location.search}`;
+    }
 
     // ============================================================
     // SECTION B: Modal element references and per-page config
@@ -376,6 +444,16 @@ Source URL: https://canvas.oregonstate.edu/
       }
     });
   </script>
+
+  <footer class="footer-copyright">
+    <p>
+        &copy; {{2026}} Janeways OBGYN. All Rights Reserved.
+    </p>
+</footer>
+
+<footer>
+        <p>&copy; 2025 Shani Plunkett-de la Cruz</p>
+    </footer>
 </body>
 
 </html>
