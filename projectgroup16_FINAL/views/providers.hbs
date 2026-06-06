@@ -16,67 +16,46 @@ sample values from the DDL and field naming consistent with the DML.
 <!-- READ -->
 <div class="card">
   <h2>Browse Providers</h2>
-  </2>
   <p>Displays the list of providers and their information.</p>
-  {{!-- Static sample rows are acceptable for Step 3 Draft. --}}
+  
   <div class="table-scroll">
     <table>
       <thead>
+        {{!-- For the table header row, we print the DB attribute names --}}
         <tr>
-          <th>Provider ID</th>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>Start Date</th>
-          <th>Title</th>
-          <th>Actions</th>
-        <tr>
+          {{#each providers.[0]}}
+          <th>
+            {{@key}}
+          </th>
+          {{/each}}
+          <th></th>
+        </tr>
       </thead>
       <tbody>
-        </tr>
+        {{#each providers}}
         <tr>
-          <td>102</td>
-          <td>Katherine</td>
-          <td>Pulaski</td>
-          <td>2015-11-11</td>
-          <td>Doctor</td>
+          <td>{{this.providerID}}</td>
+          <td>{{this.firstName}}</td>
+          <td>{{this.lastName}}</td>
+          <td>{{this.startDate}}</td>
+          <td>{{this.title}}</td>
           <td>
-            <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
-            <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
+            <button class="btn-edit" type="button"
+              data-id="{{this.providerID}}"
+              data-firstname="{{this.firstName}}"
+              data-lastname="{{this.lastName}}"
+              data-startdate="{{this.startDate}}"
+              data-title="{{this.title}}">
+              Edit
+            </button>
+            <button class="btn-delete" type="button"
+              data-id="{{this.providerID}}"
+              data-name="{{this.title}} {{this.firstName}} {{this.lastName}}">
+              Delete
+            </button>
           </td>
         </tr>
-        <tr>
-          <td>113</td>
-          <td>Beverly</td>
-          <td>Crusher</td>
-          <td>2020-10-16</td>
-          <td>Doctor</td>
-          <td>
-            <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
-            <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
-          </td>
-        </tr>
-        <tr>
-          <td>249</td>
-          <td>Christine</td>
-          <td>Chapel</td>
-          <td>2017-03-06</td>
-          <td>Nurse</td>
-          <td>
-            <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
-            <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
-          </td>
-        </tr>
-        <tr>
-          <td>368</td>
-          <td>Julienne</td>
-          <td>Bashir</td>
-          <td>2021-02-12</td>
-          <td>Midwife</td>
-          <td>
-            <a class="btn-edit" href="/not-implemented?feature=provider-locations-edit">Edit</a>
-            <a class="btn-delete" href="/not-implemented?feature=provider-locations-delete">Delete</a>
-          </td>
-        </tr>
+        {{/each}}
       </tbody>
     </table>
   </div>
@@ -85,8 +64,8 @@ sample values from the DDL and field naming consistent with the DML.
 <!-- CREATE -->
 <div class="card">
   <h2> Add a Provider</h2>
-  {{!-- Field names reflect the DML Add Provider query. --}}
-  <form action="/providers/add" method="POST">
+  {{! Field names reflect the DML Add Provider query. }}
+  <form action="/providers/create" method="POST">
     <label for="create_providerID">Provider ID:</label>
     <input type="number" id="create_providerID" name="providerID" min="100" required />
 
@@ -111,18 +90,18 @@ sample values from the DDL and field naming consistent with the DML.
   </form>
 </div>
 
-<!-- UPDATE -->
+{{!-- UPDATE SECTION - COMMENTED OUT FOR NOW
 <div class="card">
   <h2>Update a Provider</h2>
-  {{!-- Update form remains UI-only for Step 3 Draft. --}}
   <form action="/providers/update" method="POST">
     <label for="update_providerID_lookup">Provider to Update:</label>
-    <select id="update_providerID_lookup" name="providerIDLookup" required>
-      <option value="" disabled selected>Select a provider</option>
-      <option value="102">102 - Katherine Pulaski</option>
-      <option value="113">113 - Beverly Crusher</option>
-      <option value="249">249 - Christine Chapel</option>
-      <option value="368">368 - Julienne Bashir</option>
+    <select id="update_providerID_lookup" name="update_providerID" required>
+      <option value="">Select a Provider</option>
+      {{#each providers}}
+      <option value="{{this.providerID}}">
+        {{this.providerID}} - {{this.firstName}} {{this.lastName}}
+      </option>
+      {{/each}}
     </select>
 
     <label for="update_firstName">First Name:</label>
@@ -145,21 +124,25 @@ sample values from the DDL and field naming consistent with the DML.
     <input type="submit" value="Update Provider" />
   </form>
 </div>
+--}}
 
+{{!-- DELETE SECTION - COMMENTED OUT FOR NOW
 <!-- DELETE -->
 <div class="card">
   <h2>Delete a Provider</h2>
-  {{!-- Delete remains a simple selector + submit UI for this draft phase. --}}
+  <!-- Delete remains a simple selector + submit UI for this draft phase. -->
   <form action="/providers/delete" method="POST">
     <label for="delete_providerID">Provider to Delete:</label>
-    <select id="delete_providerID" name="providerID" required>
-      <option value="" disabled selected>Select a provider</option>
-      <option value="102">102 - Katherine Pulaski</option>
-      <option value="113">113 - Beverly Crusher</option>
-      <option value="249">249 - Christine Chapel</option>
-      <option value="368">368 - Julienne Bashir</option>
+    <select id="delete_providerID" name="delete_providerID" required>
+      <option value="">Select a Provider</option>
+      {{#each providers}}
+      <option value="{{this.providerID}}">
+        {{this.providerID}} - {{this.firstName}} {{this.lastName}}
+      </option>
+      {{/each}}
     </select>
 
     <input type="submit" value="Delete Provider" />
   </form>
 </div>
+--}}

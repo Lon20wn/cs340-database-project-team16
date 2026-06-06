@@ -1,89 +1,107 @@
-# CS340 Database Project - Team 16
+# Janeway's OBGYN Association 🩺
 
-Project repository for OSU CS340 Intro to Databases (Spring 2026).
+Course project repository for **OSU CS340: Intro to Databases (Spring 2026)**.
 
-## Team
-- Shani Plunkett-de la Cruz
-- Lon Danna
+Janeway's OBGYN Association is a database-backed administrative web app for managing day-to-day clinic operations.
 
-## Project
-Janeway's OBGYN Association database and web UI.
+## ⚡ Quick Start
 
-This project implements a database-backed administrative web interface for managing:
-- Patients
-- AppointmentTypes
-- Providers
-- Clinics
-- Appointments
-- ProviderLocations (M:N intersection table)
-
-## Repository Goals
-- Track project step deliverables for CS340
-- Maintain DDL and DML SQL scripts
-- Build and deploy Node + Handlebars UI pages for CRUD workflows
-- Collaborate via feature branch workflow
-
-## Current Status (Step 3 Draft)
-- Step 3 DML created
-- Node + Handlebars app scaffold created
-- Entity routes and browseable template pages created
-- GitHub project issues created for Step 2 and Step 3 tracking
-
-## Key Project Files
-- `projectgroup16_step3_DRAFT/` - Step 3 web app scaffold
-	- `app.js` - Express routes and server startup
-	- `views/` - Handlebars template pages
-	- `public/style.css` - basic styling
-	- `package.json` - scripts and dependencies
-- `projectgroup16_step3_DRAFT/group16_DDL.sql` - DDL + sample data
-- `projectgroup16_step3_DRAFT/group16_DML.sql` - DML queries for UI workflows
-
-## Local Development
-From the Step 3 app folder:
+### Run Locally
+From the app folder:
 
 ```bash
-cd projectgroup16_step3_DRAFT
+cd projectgroup16_FINAL
 npm install
-npm start
+npm run development
 ```
 
-Local URL:
+Default local URL:
 - http://localhost:9116
 
-## Run on ENGR server
-For grading/review, the app should run on classwork.engr.oregonstate.edu.
-
-## ENGR Server Deployment (for grading)
-The app must be running on classwork.engr.oregonstate.edu.
-
-Typical deployment:
+### Classwork Deployment
+Typical classwork deployment flow:
 
 ```bash
-git clone https://github.com/Lon20wn/cs340-database-project-team16.git
-cd cs340-database-project-team16
-git checkout feature-lon
-cd projectgroup16_step3_DRAFT
+git pull origin main
+cd projectgroup16_FINAL
 npm install
 npm run production
 ```
 
-Expected URL:
-- http://classwork.engr.oregonstate.edu:9116
+If stored procedures are updated, reload SQL on the class database:
 
-## Branch Workflow
-- `main` = stable branch
-- `feature-lon` = Lon development branch
-- `feature-shani` = Shani development branch
+```bash
+mysql -u <username> -h classmysql.engr.oregonstate.edu -p <database_name> < plsql.sql
+```
 
-Merge to `main` only after team review/verification.
+## 🎯 Project Scope
+The application supports CRUD workflows for:
+- Patients
+- Appointment Types
+- Providers
+- Clinics
+- Appointments
+- Provider Locations (M:N intersection table)
 
-## Submission reminders
-- Make sure required files are included.
-- Make sure naming rules are followed.
-- Post required links to Ed and Canvas.
+## 🧩 Current UI Behavior
+- Browse tables use consistent row-level `Edit` and `Delete` action buttons.
+- `Delete` opens a confirmation modal before submitting.
+- `Edit` opens a pre-populated modal form for the selected row.
+- Legacy inline UPDATE/DELETE form sections are preserved in views as commented fallback blocks.
 
-## Code citation note
-Parts of the Node/Handlebars structure and UI form layout were adapted from the CS340 starter code and Web Application Technology Exploration materials. Project-specific schema fields, page content, and entity setup were adapted for Janeway's OBGYN Association.
+## ✅ Project Objectives
+- Design and implement a normalized relational schema.
+- Build a web UI that supports required CS340 CRUD workflows.
+- Implement SQL-driven data access (DDL, DML, PL/SQL procedures).
+- Deploy and run the application in the OSU classwork environment.
 
-## AI use
-If AI tools are used, include the required course citation/summary in the final submission.
+## 🧰 Tech Stack
+- **Backend:** Node.js + Express
+- **Templating:** Handlebars
+- **Database:** MariaDB / MySQL
+- **Frontend:** HTML/CSS (server-rendered pages)
+
+## 📁 Repository Structure
+- `projectgroup16_FINAL/`
+	- `app.js` — Express server and route handlers
+	- `database/` — DB connection logic
+	- `views/` — Handlebars UI pages
+	- `public/` — Static assets (CSS)
+	- `package.json` — Scripts and dependencies
+- `projectgroup16_FINAL/group16_DDL.sql` — Schema + sample data
+- `projectgroup16_FINAL/group16_DML.sql` — Data manipulation queries
+- `projectgroup16_FINAL/plsql.sql` — Stored procedures (including RESET and CUD procedures)
+
+## 🌿 Branching Strategy
+- `main` — stable branch
+- `feature-lon` — Lon development work
+- `feature-shani` — Shani development work
+
+Changes are developed on feature branches and merged after review/testing.
+
+## 📦 Documentation and Deliverables
+This repository tracks SQL files, application code, and report artifacts for CS340 project step submissions.
+
+## 👥 Teammates
+- Shani Plunkett-de la Cruz
+- Lon Danna
+
+## 🐞 Report a Bug
+If you find a bug or data inconsistency:
+1. Open the repository's Issues tab.
+2. Click **New issue**.
+3. Include:
+	 - Page/feature where the bug appears
+	 - Steps to reproduce
+	 - Expected behavior vs actual behavior
+	 - Relevant error message or screenshot
+
+## 📚 Citations and Originality
+Portions of structure and patterns were adapted from CS340 starter/exploration materials. Team-authored project logic, schema design, and implementation details are documented within project files.
+
+### AI Tools
+- **Microsoft Copilot** — Used to assist in generating stored procedures (stored in `plsql.sql`).
+
+### Course Materials
+- **CS340 Introduction to Databases (Oregon State University)** — Starter code patterns for the Node.js/Express web application (`app.js`) and Handlebars view templates were adapted from CS340 course materials.
+- **CS290 Web Development (Oregon State University)** — CSS styling was adapted from CS290 coursework materials.

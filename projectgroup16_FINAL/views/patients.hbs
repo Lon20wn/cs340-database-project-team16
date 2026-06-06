@@ -16,14 +16,15 @@ Source URL: https://canvas.oregonstate.edu/
   <div class="table-scroll">
     <table>
       <thead>
-        {{! For the table header row, we print the DB attribute names}}
         <tr>
-          {{#each patients.[0]}}
-          <th>
-            {{@key}}
-          </th>
-          {{/each}}
-          <th></th>
+          <th>Patient ID</th>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Date of Birth</th>
+          <th>Address</th>
+          <th>Language</th>
+          <th>Insurance Payor</th>
+        <th>Action</th>
         </tr>
       </thead>
       <tbody>
@@ -36,14 +37,23 @@ Source URL: https://canvas.oregonstate.edu/
           <td>{{this.address}}</td>
           <td>{{this.language}}</td>
           <td>{{this.insurancePayor}}</td>
-          <form id="delete_patient_form" method="POST" action="/patients/delete">
-            <input type="hidden" name="delete_patientID" value="{{this.patientID}}" />
-            <td>
-              <button type="submit">
-                Delete
-              </button>
-            </td>
-          </form>
+          <td>
+            <button class="btn-edit" type="button"
+              data-id="{{this.patientID}}"
+              data-firstname="{{this.firstName}}"
+              data-lastname="{{this.lastName}}"
+              data-dob="{{this.dateOfBirth}}"
+              data-address="{{this.address}}"
+              data-language="{{this.language}}"
+              data-insurance="{{this.insurancePayor}}">
+              Edit
+            </button>
+            <button class="btn-delete" type="button"
+              data-id="{{this.patientID}}"
+              data-name="{{this.firstName}} {{this.lastName}}">
+              Delete
+            </button>
+          </td>
         </tr>
         {{/each}}
       </tbody>
@@ -79,7 +89,7 @@ Source URL: https://canvas.oregonstate.edu/
   </form>
 </div>
 
-<!-- UPDATE -->
+{{!-- <!-- UPDATE -->
 <div class="card">
   <h2>Update an Existing Patient</h2>
   <p>Update any or all of an existing patient's information by filling out the form below.</p>
@@ -114,13 +124,14 @@ Source URL: https://canvas.oregonstate.edu/
 
     <input type="submit" value="Update Patient" />
   </form>
-</div>
+</div> --}}
 
+{{!-- DELETE SECTION - COMMENTED OUT FOR NOW
 <!-- DELETE -->
 <div class="card">
   <h2>Delete an Existing Patient</h2>
-  <p>Permanetly remove a patient from the database by selecting them below.</p>
-  {{!-- Delete remains a simple selector + submit UI for this draft phase. --}}
+  <p>Permanently remove a patient from the database by selecting them below.</p>
+  <!-- Delete remains a simple selector + submit UI for this draft phase. -->
   <form class="cuForm" action="/patients/delete" method="POST">
     <label for="delete_patientID">Patient to Delete:</label>
     <select id="delete_patientID" name="delete_patientID" required>
@@ -135,3 +146,4 @@ Source URL: https://canvas.oregonstate.edu/
     <input type="submit" value="Delete Patient" />
   </form>
 </div>
+--}}

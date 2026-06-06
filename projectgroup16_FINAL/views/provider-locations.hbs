@@ -1,0 +1,131 @@
+{{!--
+Citation for this file:
+Date: 05/06/2026
+Adapted from CS340 Node.js starter/exploration materials.
+Source: CS340 Web Application Technology Exploration and Node Part 2 walkthrough.
+Source URL: https://canvas.oregonstate.edu/
+--}}
+
+<h1>Provider Locations</h1>
+
+{{!--
+Implementation summary:
+This page manages the many-to-many relationship between Providers and Clinics.
+It follows the same Step 3 draft structure as the other entity pages.
+--}}
+
+<!-- READ -->
+<div class="card">
+  <h2>Browse Provider Locations</h2>
+  <p>Displays which providers work at which clinic locations.</p>
+  <div class="table-scroll">
+    <table>
+      <thead>
+        {{!-- For the table header row, we print the DB attribute names --}}
+        <tr>
+          {{#each providerLocations.[0]}}
+          <th>
+            {{@key}}
+          </th>
+          {{/each}}
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each providerLocations}}
+        <tr>
+          <td>{{this.locationID}}</td>
+          <td>{{this.providerID}}</td>
+          <td>{{this.clinicID}}</td>
+          <td>{{this.firstName}}</td>
+          <td>{{this.lastName}}</td>
+          <td>{{this.city}}</td>
+          <td>
+            <button class="btn-edit" type="button"
+              data-id="{{this.locationID}}"
+              data-providerid="{{this.providerID}}"
+              data-clinicid="{{this.clinicID}}"
+              data-name="{{this.firstName}} {{this.lastName}} @ {{this.city}}">
+              Edit
+            </button>
+            <button class="btn-delete" type="button"
+              data-id="{{this.locationID}}"
+              data-name="{{this.firstName}} {{this.lastName}} @ {{this.city}}">
+              Delete
+            </button>
+          </td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- CREATE -->
+<div class="card">
+  <h2>Add a Provider Location</h2>
+  <form action="/provider-locations/create" method="POST">
+    <label for="create_providerID">Provider:</label>
+    <select id="create_providerID" name="create_providerID" required>
+      <option value="" disabled selected>Select a provider</option>
+      {{#each providers}}
+      <option value="{{this.providerID}}">{{this.providerID}} - {{this.firstName}} {{this.lastName}}</option>
+      {{/each}}
+    </select>
+
+    <label for="create_clinicID">Clinic:</label>
+    <select id="create_clinicID" name="create_clinicID" required>
+      <option value="" disabled selected>Select a clinic</option>
+      {{#each clinics}}
+      <option value="{{this.clinicID}}">{{this.clinicID}} - {{this.city}}</option>
+      {{/each}}
+    </select>
+
+    <input type="submit" value="Add Provider Location" />
+  </form>
+</div>
+
+{{!-- UPDATE SECTION - COMMENTED OUT FOR NOW
+<!-- UPDATE -->
+<div class="card">
+  <h2>Update a Provider Location</h2>
+  <form action="/provider-locations/update" method="POST">
+    <label for="update_locationID">Provider Location to Update:</label>
+    <select id="update_locationID" name="update_locationID" required>
+      <option value="" disabled selected>Select a provider location</option>
+      {{#each providerLocations}}
+      <option value="{{this.locationID}}">{{this.locationID}} - {{this.firstName}} {{this.lastName}} @ {{this.city}}</option>
+      {{/each}}
+    </select>
+
+    <label for="update_clinicID">New Clinic:</label>
+    <select id="update_clinicID" name="update_clinicID" required>
+      <option value="" disabled selected>Select a clinic</option>
+      {{#each clinics}}
+      <option value="{{this.clinicID}}">{{this.clinicID}} - {{this.city}}</option>
+      {{/each}}
+    </select>
+
+    <input type="submit" value="Update Provider Location" />
+  </form>
+</div>
+--}}
+
+{{!-- DELETE SECTION - COMMENTED OUT FOR NOW
+<!-- DELETE -->
+<div class="card">
+  <h2>Delete a Provider Location</h2>
+  <!-- Delete remains a simple selector + submit UI for this draft phase. -->
+  <form action="/provider-locations/delete" method="POST">
+    <label for="delete_locationID">Provider Location to Delete:</label>
+    <select id="delete_locationID" name="delete_locationID" required>
+      <option value="" disabled selected>Select a provider location</option>
+      {{#each providerLocations}}
+      <option value="{{this.locationID}}">{{this.locationID}} - {{this.firstName}} {{this.lastName}} @ {{this.city}}</option>
+      {{/each}}
+    </select>
+
+    <input type="submit" value="Delete Provider Location" />
+  </form>
+</div>
+--}}

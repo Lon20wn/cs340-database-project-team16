@@ -1,4 +1,12 @@
 /*
+Citation for this file:
+Date: 05/27/2026
+Adapted from our project DDL and the CS340 reset stored procedure pattern.
+Source: CS340 Exploration: PL/SQL part 1, SP, View and Function.
+Source URL: https://canvas.oregonstate.edu/
+*/
+
+/*
     Create tables for the following entities: Patients, AppointmentTypes, Providers, Clinics, and Appointments. 
     Create table for ProviderLocations intersection table to represent the many-to-many relationship between Providers and Clinics.
 */
