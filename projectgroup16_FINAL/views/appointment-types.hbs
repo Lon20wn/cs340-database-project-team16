@@ -20,15 +20,14 @@ sample values from the DDL and field naming consistent with the DML.
   <p>Displays the appointment type catalog used when scheduling appointments.</p>
   <div class="table-scroll">
     <table class="appointment-types-table">
-      <thead> {{! For the table header row, we print the DB attribute names }}
+      <thead>
         <tr>
-          {{#each appointment_types.[0]}}
-          <th>
-            {{@key}}
-          </th>
-          {{/each}}
+          <th>Type ID</th>
+          <th>Description</th>
+          <th>Duration (minutes)</th>
           <th></th>
         </tr>
+
       </thead>
       <tbody>
         {{! For each row, print the typeID, description, and durationInMinutes }}

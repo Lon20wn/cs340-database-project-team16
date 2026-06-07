@@ -18,22 +18,17 @@ see planned CRUD coverage for the Appointments entity.
 <div class="card">
   <h2>Browse Appointments</h2>
   <p>Displays all appointment records in the system.</p>
-  {{!--
-  Step 3 note:
-  This table shows static sample rows for the draft UI.
-  Column names align with Appointments table attributes in DDL/DML.
-  --}}
-  <p class="small-note">Edit/Delete buttons are placeholders for later project steps.</p>
   <div class="table-scroll">
     <table>
       <thead>
-        {{! For the table header row, we print th DB attribute names }}
         <tr>
-          {{#each appointments.[0]}}
-          <th>
-            {{@key}}
-          </th>
-          {{/each}}
+          <th>AppointmentID</th>
+          <th>Appointment Date/Time</th>
+          <th>Appointment Status</th>
+          <th>Type ID</th>
+          <th>Patient ID</th>
+          <th>Provider ID</th>
+          <th>Clinic ID</th>
           <th></th>
         </tr>
       </thead>

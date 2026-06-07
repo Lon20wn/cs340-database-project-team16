@@ -9,7 +9,12 @@ Source URL: https://canvas.oregonstate.edu/
 <h1>Janeway's OBGYN Association</h1>
 <div class="card">
   <p><strong>CS340 Project Final</strong></p>
-  <p>This start page links to each table UI page for browsing and planned CRUD operations.</p>
+  <p>Welcome to Janeway's OBGYN Association database management system!</p>
+  <p>This web application provides a user-friendly interface for managing all records and data relating to appointments
+    between patients and providers at our clinic locations.</p>
+  <p>This application utilizes On Delete Restrict functionality to prevent accidental deletion of historical data.
+    Banner messages will appear if a user attempts to delete a record that is referenced by the Appointments or Provider Locations tables.
+    In order to delete a record that is referenced by another table, the user must either update or delete the referencing record(s) first.</p>
 </div>
 
 <div class="card">
@@ -19,7 +24,7 @@ Source URL: https://canvas.oregonstate.edu/
     <li>Appointment Types</li>
     <li>Providers</li>
     <li>Clinics</li>
-    <li>Appointments</li>
+    <li>Appointments (M:N transaction table)</li>
     <li>Provider Locations (M:N intersection table)</li>
   </ul>
   <p class="small-note">Step 5 includes working CRUD routes, shared modal-based actions, and in-page error banners for failed actions.</p>
