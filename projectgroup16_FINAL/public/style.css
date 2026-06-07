@@ -1,9 +1,21 @@
 /*
+Project: Janeway's OBGYN Association — CS340 Final Project
+File: public/style.css
+Authors: Shani Plunkett-de la Cruz, Lon Danna
+
 Citation for this file:
 Date: 05/06/2026
 Adapted from CS340 Node.js starter/exploration materials.
 Source: CS340 Web Application Technology Exploration and Node Part 2 walkthrough.
-Source URL: https://canvas.oregonstate.edu/
+
+Additional citation:
+Date: 06/04/2026
+Adapted from CS290 Web Development course materials.
+The flexbox layout patterns, nav bar structure, button styling (.btn-edit, .btn-delete,
+.modal-btn), modal overlay/dialog CSS, and general component CSS organization
+are based on techniques and patterns covered in CS290.
+Darkmode/lightmode theme structure implemented using CSS from past CS20 projects.
+Source: CS290 Web Development, Oregon State University
 
 File purpose:
 Provides shared styling for the Step 3 draft UI pages, including layout,
