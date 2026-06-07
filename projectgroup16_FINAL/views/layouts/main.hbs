@@ -1,9 +1,23 @@
 {{!--
+Project: Janeway's OBGYN Association — CS340 Final Project
+File: views/layouts/main.hbs
+Authors: Shani Plunkett-de la Cruz, Lon Danna
+
 Citation for this file:
 Date: 05/06/2026
 Adapted from CS340 Node.js starter/exploration materials.
 Source: CS340 Web Application Technology Exploration and Node Part 2 walkthrough.
-Source URL: https://canvas.oregonstate.edu/
+
+File purpose:
+Shared Handlebars layout for all entity pages, including navigation,
+error/success banners, and global edit/delete modal behavior.
+
+Citation for the modal HTML below:
+Date: 06/04/2026
+Adapted from CS290 Web Development course materials.
+The modal overlay/dialog pattern (hidden attribute, role="dialog", aria-modal,
+Cancel/Confirm button structure) follows the accessible modal pattern covered in CS290.
+Source: CS290 Web Development, Oregon State University
 --}}
 
 <!DOCTYPE html>
@@ -395,6 +409,15 @@ Source URL: https://canvas.oregonstate.edu/
     });
 
     // ============================================================
+    // Citation for the button event delegation and modal wiring below:
+    // Date: 06/04/2026
+    // Adapted from CS290 Web Development course materials.
+    // The event delegation pattern (single document click listener with
+    // event.target.closest()), dynamic form creation, and modal open/close
+    // approach are based on techniques covered in CS290.
+    // Source: CS290 Web Development, Oregon State University
+    // Source URL: https://canvas.oregonstate.edu/
+    // ============================================================
     // SECTION E: Global click delegation for row action buttons
     // - .btn-delete opens confirm modal and posts delete on confirm
     // - .btn-edit opens edit modal prefilled from row data attributes
@@ -450,10 +473,5 @@ Source URL: https://canvas.oregonstate.edu/
         &copy; {{2026}} Janeways OBGYN. All Rights Reserved.
     </p>
 </footer>
-
-<footer>
-        <p>&copy; 2025 Shani Plunkett-de la Cruz</p>
-    </footer>
-</body>
 
 </html>
