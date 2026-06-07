@@ -10,6 +10,7 @@
 -- Date: 06/04/2026
 -- Adapted from team project work and class SQL patterns for SELECT, INSERT, UPDATE, and DELETE statements.
 -- NOTE: Specific external source attribution is pending verification with teammates.
+--
 -- File purpose:
 -- Reference DML queries for browse, dropdown, create, update, and delete behavior.
 
