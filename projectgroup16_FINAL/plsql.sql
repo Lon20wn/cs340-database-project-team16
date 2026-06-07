@@ -1,4 +1,8 @@
 -------------------------------------------------------------
+-- Project: Janeway's OBGYN Association — CS340 Final Project
+-- File: plsql.sql
+-- Authors: Shani Plunkett-de la Cruz, Lon Danna
+-------------------------------------------------------------
 --Citation for this file:
 --Date: 05/24/2026
 --Adapted from: 
@@ -16,6 +20,10 @@
 -- Adapted from: Microsoft Copilot suggestions.
 -- Source URL: copilot.microsoft.com
 -- Prompt used: "Write a stored procedure called reset that executes an original DDL file and removes any added data."
+--
+-- File purpose:
+-- Defines stored procedures used by the app for create, read, update, delete,
+-- and reset operations.
 ----------------------------------------------------------------------------------------
 
 
