@@ -1,6 +1,17 @@
+-- Project: Janeway's OBGYN Association — CS340 Final Project
+-- File: group16_DML.sql
+-- Authors: Shani Plunkett-de la Cruz, Lon Danna
+--
 -- Janeway's OBGYN Association
 -- Step 3 Draft: Data Manipulation Queries (DML)
 -- Variable convention: @variableName denotes a value supplied by the backend.
+--
+-- Citation for this file:
+-- Date: 06/04/2026
+-- Adapted from team project work and class SQL patterns for SELECT, INSERT, UPDATE, and DELETE statements.
+-- NOTE: Specific external source attribution is pending verification with teammates.
+-- File purpose:
+-- Reference DML queries for browse, dropdown, create, update, and delete behavior.
 
 /* =========================================================
 READ (SELECT) QUERIES - one browse query per table

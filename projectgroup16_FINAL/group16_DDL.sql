@@ -1,9 +1,15 @@
 /*
+Project: Janeway's OBGYN Association — CS340 Final Project
+File: group16_DDL.sql
+Authors: Shani Plunkett-de la Cruz, Lon Danna
+
 Citation for this file:
 Date: 05/27/2026
 Adapted from our project DDL and the CS340 reset stored procedure pattern.
 Source: CS340 Exploration: PL/SQL part 1, SP, View and Function.
 Source URL: https://canvas.oregonstate.edu/
+File purpose:
+Defines base schema objects and relationships for the final project database.
 */
 
 /*
