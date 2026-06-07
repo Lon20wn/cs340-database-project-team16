@@ -1,3 +1,7 @@
+// Project: Janeway's OBGYN Association — CS340 Final Project
+// File: app.js
+// Authors: Shani Plunkett-de la Cruz, Lon Danna
+//
 // Citation for this file:
 // Date: 05/06/2026
 // Adapted from CS340 Node.js starter/exploration materials.
@@ -7,6 +11,16 @@
 // Date: 5/28/26
 // Adapted from and based on: CS340 Exploration - Implementing CUD operations in your app
 // Source URL: https://canvas.oregonstate.edu/courses/2042369/pages/exploration-implementing-cud-operations-in-your-app?module_item_id=26640205
+//
+// Additional citation for error UX helpers:
+// Date: 06/04/2026
+// Microsoft Copilot assistance was used for formatting and comment clarity in
+// the getFriendlyErrorMessage() switch blocks for ER_DUP_ENTRY and
+// ER_ROW_IS_REFERENCED_2/errno 1451 handling (lines 57-111).
+//
+// File purpose:
+// Express server for Janeway's OBGYN Association, including route handlers,
+// CRUD operations, reset flow, and shared in-page error/success messaging.
 
 const express = require('express');
 const { engine } = require('express-handlebars');
