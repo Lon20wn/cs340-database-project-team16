@@ -43,6 +43,25 @@ The application supports CRUD workflows for:
 - Appointments
 - Provider Locations (M:N intersection table)
 
+## 🧭 How to Use the App
+1. Open the home page and navigate to an entity page (Patients, Providers, Appointments, etc.).
+2. Use the **Create** form on that page to add a new record.
+3. Use row-level **Edit** to open a pre-populated modal and save updates.
+4. Use row-level **Delete** to open a confirmation modal and remove records.
+5. Use **Reset Database** in the top navigation to restore baseline data from stored procedures.
+
+### Notes for Common Workflows
+- If a delete is blocked by related records, the page shows a plain-English banner explaining what dependency must be removed first.
+- Appointments must be set to **Voided** before deletion (business rule enforced by stored procedure).
+- Reset displays a green success banner and returns to the current page.
+
+## 🧠 Key Design Decisions
+- **Shared layout-level modals:** one reusable edit/delete modal system in `views/layouts/main.hbs` for consistent behavior across entities.
+- **Friendly in-page feedback:** server redirects with query messages (`?error=`, `?success=`) rendered as banners instead of generic error pages.
+- **One-time banner lifecycle:** URL params are cleaned after render to prevent stale messages on refresh.
+- **Date prefill reliability:** mysql2 `dateStrings: true` plus client-side formatting ensures `date` and `datetime-local` fields pre-populate correctly.
+- **Schema integrity first:** foreign-key restrictions and procedure-level rules are preserved, with clear guidance shown to users when actions are blocked.
+
 ## 🧩 Current UI Behavior
 - Browse tables use consistent row-level `Edit` and `Delete` action buttons.
 - `Delete` opens a confirmation modal before submitting.
