@@ -2,6 +2,8 @@
 
 Course project repository for **OSU CS340: Intro to Databases (Spring 2026)**.
 
+## 🔗 Link to GitHub repo: https://github.com/Lon20wn/cs340-database-project-team16
+
 Janeway's OBGYN Association is a database-backed administrative web app for managing day-to-day clinic operations.
 
 ## ⚡ Quick Start
