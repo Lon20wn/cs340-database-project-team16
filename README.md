@@ -9,7 +9,7 @@ Janeway's OBGYN Association is a database-backed administrative web app for mana
 
 ## ⚡ Quick Start
 
-### Run Locally
+### Run Locally (Development)
 From the app folder:
 
 ```bash
@@ -21,17 +21,29 @@ npm run development
 Default local URL:
 - http://localhost:9116
 
-### Classwork Deployment
-Typical classwork deployment flow:
+### Run in Production Mode
+From the app folder:
 
 ```bash
-git pull origin main
 cd projectgroup16_FINAL
 npm install
 npm run production
 ```
 
-If stored procedures are updated, reload SQL on the class database:
+To stop production mode:
+
+```bash
+npm run stop_production
+```
+
+### Database Setup / Refresh
+Load schema and seed data:
+
+```bash
+mysql -u <username> -h classmysql.engr.oregonstate.edu -p <database_name> < group16_DDL.sql
+```
+
+If procedures are updated, reload procedures file:
 
 ```bash
 mysql -u <username> -h classmysql.engr.oregonstate.edu -p <database_name> < plsql.sql
@@ -69,7 +81,8 @@ The application supports CRUD workflows for:
 - Browse tables use consistent row-level `Edit` and `Delete` action buttons.
 - `Delete` opens a confirmation modal before submitting.
 - `Edit` opens a pre-populated modal form for the selected row.
-- Legacy inline UPDATE/DELETE form sections are preserved in views as commented fallback blocks.
+- Success and error banners are shown inline at the top of page content.
+- Navigation links and action buttons include hover feedback for clearer interactivity.
 
 ## ✅ Project Objectives
 - Design and implement a normalized relational schema.
@@ -89,10 +102,11 @@ The application supports CRUD workflows for:
 	- `database/` — DB connection logic
 	- `views/` — Handlebars UI pages
 	- `public/` — Static assets (CSS)
-	- `package.json` — Scripts and dependencies
-- `projectgroup16_FINAL/group16_DDL.sql` — Schema + sample data
-- `projectgroup16_FINAL/group16_DML.sql` — Data manipulation queries
-- `projectgroup16_FINAL/plsql.sql` — Stored procedures (including RESET and CUD procedures)
+	- `package.json` — scripts and dependencies
+- `projectgroup16_FINAL/group16_DDL.sql` — schema + sample data
+- `projectgroup16_FINAL/group16_DML.sql` — data manipulation queries
+- `projectgroup16_FINAL/plsql.sql` — stored procedures (including RESET and CUD procedures)
+- `PROJECT_REPORT.md` — final project report content
 
 ## 🌿 Branching Strategy
 - `main` — stable branch
@@ -113,17 +127,18 @@ If you find a bug or data inconsistency:
 1. Open the repository's Issues tab.
 2. Click **New issue**.
 3. Include:
-	 - Page/feature where the bug appears
-	 - Steps to reproduce
-	 - Expected behavior vs actual behavior
-	 - Relevant error message or screenshot
+	- Page/feature where the bug appears
+	- Steps to reproduce
+	- Expected behavior vs actual behavior
+	- Relevant error message or screenshot
 
 ## 📚 Citations and Originality
-Portions of structure and patterns were adapted from CS340 starter/exploration materials. Team-authored project logic, schema design, and implementation details are documented within project files.
+This section consolidates the citation headers used across files in projectgroup16_FINAL. Team-authored project logic, schema design, and implementation details are documented within the source files themselves.
 
 ### AI Tools
-- **Microsoft Copilot** — Used to assist in generating stored procedures (stored in `plsql.sql`).
+- **Microsoft Copilot** — Assisted with `app.js` error-message formatting and `plsql.sql` stored procedure drafting/refinement, including the appointment delete rule and reset procedure.
 
 ### Course Materials
-- **CS340 Introduction to Databases (Oregon State University)** — Starter code patterns for the Node.js/Express web application (`app.js`) and Handlebars view templates were adapted from CS340 course materials.
-- **CS290 Web Development (Oregon State University)** — CSS styling was adapted from CS290 coursework materials.
+- **CS340 course materials** — Adapted across `app.js`, `database/db-connector.js`, `group16_DDL.sql`, `group16_DML.sql`, `plsql.sql`, `public/style.css`, and the Handlebars views under `views/` from the Web Application Technology Exploration and Node Part 2 walkthrough, Activity2 starter code, Implementing CUD operations in your app, and PL/SQL part 1/SP/View/Function materials.
+- **CS290 Web Development, Oregon State University** — Adapted in `public/style.css` and `views/layouts/main.hbs` for layout, modal, button, and responsive UI patterns.
+- **CS290 course project materials** — Inspired the dark mode/light mode theme structure used in `public/style.css`.
