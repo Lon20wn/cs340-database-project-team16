@@ -18,7 +18,6 @@ ProviderLocations (M:N) browse/create page with row-level edit and delete action
 {{!--
 Implementation summary:
 This page manages the many-to-many relationship between Providers and Clinics.
-It follows the same Step 3 draft structure as the other entity pages.
 --}}
 
 <!-- READ -->
@@ -28,13 +27,13 @@ It follows the same Step 3 draft structure as the other entity pages.
   <div class="table-scroll">
     <table>
       <thead>
-        {{!-- For the table header row, we print the DB attribute names --}}
         <tr>
-          {{#each providerLocations.[0]}}
-          <th>
-            {{@key}}
-          </th>
-          {{/each}}
+          <th>Location ID</th>
+          <th>Provider ID</th>
+          <th>Clinic ID</th>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>City</th>
           <th></th>
         </tr>
       </thead>
